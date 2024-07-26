@@ -151,7 +151,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<span>{{ (user.myMutualLink?.description === '' || user.myMutualLink?.description === null) ? i18n.ts.noDescription : user.myMutualLink?.description }}</span>
 						</div>
 					</div>
-					<div v-if="user.mutualLinks.length > 0" class="fields">
+					<div v-if="user?.mutualLinks && user?.mutualLinks.length > 0" class="fields">
 						{{ i18n.ts.mutualLink }}
 						<div :style="{display:'flex', justifyContent: 'space-around',flexWrap: 'wrap'}">
 							<div v-for="(mutualLink, i) in user.mutualLinks.slice(0, 9)" :key="i">
