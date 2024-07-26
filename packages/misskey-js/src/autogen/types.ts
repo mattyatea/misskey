@@ -3812,6 +3812,17 @@ export type components = {
           value: string;
         }[];
       verifiedLinks: string[];
+			mutualLinks: {
+				url: string;
+				fileId: components['schemas']['DriveFile']['id'];
+				description: string | null;
+				imgUrl: string;
+			}[];
+			myMutualLink: {
+				fileId: components['schemas']['DriveFile']['id'];
+				description: string | null;
+				imgUrl: string;
+			} | null;
       followersCount: number;
       followingCount: number;
       notesCount: number;
@@ -28243,4 +28254,3 @@ export type operations = {
     };
   };
 };
-
