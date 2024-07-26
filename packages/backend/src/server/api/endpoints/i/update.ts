@@ -56,6 +56,12 @@ export const meta = {
 			id: '539f3a45-f215-4f81-a9a8-31293640207f',
 		},
 
+		noSuchFile: {
+			message: 'No such file.',
+			code: 'NO_SUCH_FILE',
+			id: 'e0f0d3c7-e704-4314-a0b5-04286d69a65c',
+		},
+
 		noSuchBanner: {
 			message: 'No such banner file.',
 			code: 'NO_SUCH_BANNER',
@@ -66,6 +72,12 @@ export const meta = {
 			message: 'The file specified as an avatar is not an image.',
 			code: 'AVATAR_NOT_AN_IMAGE',
 			id: 'f419f9f8-2f4d-46b1-9fb4-49d3a2fd7191',
+		},
+
+		fileNotAnImage: {
+			message: 'The specified file is not an image.',
+			code: 'FILE_NOT_AN_IMAGE',
+			id: '2851568b-5ad1-4031-bf0d-5320afebf3a9',
 		},
 
 		bannerNotAnImage: {
@@ -178,8 +190,8 @@ export const paramDef = {
 		mutedWords: { type: 'array', items: {
 			oneOf: [
 				{ type: 'array', items: { type: 'string' } },
-				{ type: 'string' }
-			]
+				{ type: 'string' },
+			],
 		} },
 		mutedInstances: { type: 'array', items: {
 			type: 'string',
@@ -212,6 +224,27 @@ export const paramDef = {
 			maxItems: 10,
 			uniqueItems: true,
 			items: { type: 'string' },
+		},
+		mutualLinks: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					url: { type: 'string' },
+					fileId: { type: 'string', format: 'misskey:id' },
+					description: { type: 'string', nullable: true },
+				},
+				required: ['url', 'fileId'],
+			},
+		},
+		myMutualLink: {
+			type: 'object',
+			nullable: true,
+			properties: {
+				fileId: { type: 'string', format: 'misskey:id' },
+				description: { type: 'string' },
+			},
+			required: ['fileId'],
 		},
 	},
 } as const;
@@ -320,6 +353,37 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				updates.avatarId = null;
 				updates.avatarUrl = null;
 				updates.avatarBlurhash = null;
+			}
+
+			if (ps.mutualLinks) {
+				const mutualLinks = [];
+				for (const mutualLink of ps.mutualLinks) {
+					const file = await this.driveFilesRepository.findOneBy({ id: mutualLink.fileId });
+
+					if (file === null) throw new ApiError(meta.errors.noSuchFile);
+					if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
+
+					mutualLinks.push({
+						url: mutualLink.url,
+						fileId: file.id,
+						imgUrl: this.driveFileEntityService.getPublicUrl(file),
+						description: mutualLink.description ?? null,
+					});
+				}
+				profileUpdates.mutualLinks = mutualLinks;
+			}
+			if (ps.myMutualLink) {
+				const file = await this.driveFilesRepository.findOneBy({ id: ps.myMutualLink.fileId });
+
+				if (file === null) throw new ApiError(meta.errors.noSuchFile);
+				if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
+				profileUpdates.myMutualLink = {
+					fileId: file.id,
+					description: ps.myMutualLink.description ?? null,
+					imgUrl: this.driveFileEntityService.getPublicUrl(file),
+				};
+			} else if (ps.myMutualLink === null) {
+				profileUpdates.myMutualLink = null;
 			}
 
 			if (ps.bannerId) {

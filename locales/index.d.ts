@@ -5083,6 +5083,18 @@ export interface Locale extends ILocale {
      * こちら
      */
     "here": string;
+    /**
+     * 相互リンク
+     */
+    "mutualLink": string;
+    /**
+     * このユーザーのバナー
+     */
+    "mutualBannerThisUser": string;
+    /**
+     * 最大
+     */
+    "maximum": string;
     "_bubbleGame": {
         /**
          * 遊び方
@@ -8798,6 +8810,35 @@ export interface Locale extends ILocale {
          * 最大{max}つまでデコレーションを付けられます。
          */
         "avatarDecorationMax": ParameterizedString<"max">;
+        /**
+         * 相互リンクを編集
+         */
+        "mutualLinksEdit": string;
+        /**
+         * 自身の相互リンクのバナーを設定
+         */
+        "myMutualLinkBanner": string;
+        /**
+         * あなた自身が相互リンクのバナーとして設定してほしい画像を設定することができます。
+         */
+        "myMutualLinkDescription": string;
+        /**
+         * 相互リンクのバナー
+         */
+        "mutualLinksBanner": string;
+        /**
+         * 説明
+         */
+        "mutualLinksDescriptionEdit": string;
+        /**
+         * リンク先のURL
+         */
+        "mutualLinksUrl": string;
+        /**
+         * 相互リンクを設定すると、あなたのプロフィールや、プロフィールの相互リンクタブにバナーが表示されます。
+         * また、9つ目まではプロフィールに表示されます。
+         */
+        "mutualLinksDescription": string;
     };
     "_exportOrImport": {
         /**

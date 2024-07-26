@@ -143,6 +143,24 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</dd>
 						</dl>
 					</div>
+					<div v-if="user?.myMutualLink" class="fields">
+						{{ i18n.ts.mutualBannerThisUser }}
+
+						<div :style="{display: 'flex',justifyContent: 'space-around',flexFlow: 'column wrap',alignItems: 'center'}">
+							<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="user.myMutualLink.imgUrl" :alt="user.myMutualLink.description"/>
+							<span>{{ (user.myMutualLink?.description === '' || user.myMutualLink?.description === null) ? i18n.ts.noDescription : user.myMutualLink?.description }}</span>
+						</div>
+					</div>
+					<div v-if="user.mutualLinks.length > 0" class="fields">
+						{{ i18n.ts.mutualLink }}
+						<div :style="{display:'flex', justifyContent: 'space-around',flexWrap: 'wrap'}">
+							<div v-for="(mutualLink, i) in user.mutualLinks.slice(0, 9)" :key="i">
+								<MkLink :hideIcon="true" :url="mutualLink.url">
+									<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="mutualLink.imgUrl" :alt="mutualLink.description"/>
+								</MkLink>
+							</div>
+						</div>
+					</div>
 					<div class="status">
 						<MkA :to="userPage(user)">
 							<b>{{ number(user.notesCount) }}</b>
@@ -212,6 +230,7 @@ import { confetti } from '@/scripts/confetti.js';
 import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import { isFollowingVisibleForMe, isFollowersVisibleForMe } from '@/scripts/isFfVisibleForMe.js';
 import { useRouter } from '@/router/supplier.js';
+import MkLink from '@/components/MkLink.vue';
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);

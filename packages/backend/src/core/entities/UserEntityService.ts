@@ -51,7 +51,6 @@ import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { NoteEntityService } from './NoteEntityService.js';
-import type { DriveFileEntityService } from './DriveFileEntityService.js';
 import type { PageEntityService } from './PageEntityService.js';
 
 const Ajv = _Ajv.default;
@@ -534,6 +533,8 @@ export class UserEntityService implements OnModuleInit {
 				lang: profile!.lang,
 				fields: profile!.fields,
 				verifiedLinks: profile!.verifiedLinks,
+				mutualLinks: profile!.mutualLinks,
+				myMutualLink: profile!.myMutualLink,
 				followersCount: followersCount ?? 0,
 				followingCount: followingCount ?? 0,
 				notesCount: user.notesCount,
@@ -563,7 +564,7 @@ export class UserEntityService implements OnModuleInit {
 						isModerator: role.isModerator,
 						isAdministrator: role.isAdministrator,
 						displayOrder: role.displayOrder,
-					}))
+					})),
 				),
 				memo: memo,
 				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,
