@@ -8811,10 +8811,6 @@ export interface Locale extends ILocale {
          */
         "avatarDecorationMax": ParameterizedString<"max">;
         /**
-         * 相互リンクを編集
-         */
-        "mutualLinksEdit": string;
-        /**
          * 自身の相互リンクのバナーを設定
          */
         "myMutualBanner": string;
