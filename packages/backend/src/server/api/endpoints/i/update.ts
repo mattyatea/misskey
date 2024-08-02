@@ -11,7 +11,14 @@ import { JSDOM } from 'jsdom';
 import { extractCustomEmojisFromMfm } from '@/misc/extract-custom-emojis-from-mfm.js';
 import { extractHashtags } from '@/misc/extract-hashtags.js';
 import * as Acct from '@/misc/acct.js';
-import type { UsersRepository, DriveFilesRepository, UserProfilesRepository, PagesRepository } from '@/models/_.js';
+import type {
+	UsersRepository,
+	DriveFilesRepository,
+	UserProfilesRepository,
+	PagesRepository,
+	UserBannerRepository,
+	UserBannerPiningRepository,
+} from '@/models/_.js';
 import type { MiLocalUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, descriptionSchema, locationSchema, nameSchema } from '@/models/User.js';
 import type { MiUserProfile } from '@/models/UserProfile.js';
@@ -33,6 +40,8 @@ import type { Config } from '@/config.js';
 import { safeForSql } from '@/misc/safe-for-sql.js';
 import { AvatarDecorationService } from '@/core/AvatarDecorationService.js';
 import { notificationRecieveConfig } from '@/models/json-schema/user.js';
+import { UserBannerService } from '@/core/UserBannerService.js';
+import { UserBannerPiningService } from '@/core/UserBannerPiningService.js';
 import { ApiLoggerService } from '../../ApiLoggerService.js';
 import { ApiError } from '../../error.js';
 
@@ -237,12 +246,18 @@ export const paramDef = {
 				required: ['url', 'fileId'],
 			},
 		},
-		myMutualLink: {
+		mutualBannerPining: {
+			type: 'string',
+			format: 'misskey:id',
+			nullable: true,
+		},
+		myMutualBanner: {
 			type: 'object',
 			nullable: true,
 			properties: {
 				fileId: { type: 'string', format: 'misskey:id' },
 				description: { type: 'string' },
+				url: { type: 'string' },
 			},
 			required: ['fileId'],
 		},
@@ -264,10 +279,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
 
+		@Inject(DI.userBannerRepository)
+		private userBannerRepository: UserBannerRepository,
+
 		@Inject(DI.pagesRepository)
 		private pagesRepository: PagesRepository,
 
+		@Inject(DI.userBannerPiningRepository)
+		private userBannerPiningRepository: UserBannerPiningRepository,
+
 		private userEntityService: UserEntityService,
+		private userBannerService: UserBannerService,
 		private driveFileEntityService: DriveFileEntityService,
 		private globalEventService: GlobalEventService,
 		private userFollowingService: UserFollowingService,
@@ -279,6 +301,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private cacheService: CacheService,
 		private httpRequestService: HttpRequestService,
 		private avatarDecorationService: AvatarDecorationService,
+		private userBannerPiningService: UserBannerPiningService,
 	) {
 		super(meta, paramDef, async (ps, _user, token) => {
 			const user = await this.usersRepository.findOneByOrFail({ id: _user.id }) as MiLocalUser;
@@ -355,35 +378,33 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				updates.avatarBlurhash = null;
 			}
 
-			if (ps.mutualLinks) {
-				const mutualLinks = [];
-				for (const mutualLink of ps.mutualLinks) {
-					const file = await this.driveFilesRepository.findOneBy({ id: mutualLink.fileId });
-
-					if (file === null) throw new ApiError(meta.errors.noSuchFile);
-					if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
-
-					mutualLinks.push({
-						url: mutualLink.url,
-						fileId: file.id,
-						imgUrl: this.driveFileEntityService.getPublicUrl(file),
-						description: mutualLink.description ?? null,
-					});
+			if (ps.mutualBannerPining) {
+				const bannerPiningExists = await this.userBannerPiningRepository.exists({ where: {
+					pinnedBannerId: ps.mutualBannerPining,
+				} });
+				if (bannerPiningExists) {
+					this.userBannerPiningService.removePinned(user.id, ps.mutualBannerPining);
+				} else {
+					this.userBannerPiningService.addPinned(user.id, ps.mutualBannerPining);
 				}
-				profileUpdates.mutualLinks = mutualLinks;
 			}
-			if (ps.myMutualLink) {
-				const file = await this.driveFilesRepository.findOneBy({ id: ps.myMutualLink.fileId });
+
+			if (ps.myMutualBanner) {
+				const banner = await this.userBannerRepository.findOneBy({
+					userId: user.id,
+				});
+				const file = await this.driveFilesRepository.findOneBy({ id: ps.myMutualBanner.fileId });
 
 				if (file === null) throw new ApiError(meta.errors.noSuchFile);
 				if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
-				profileUpdates.myMutualLink = {
-					fileId: file.id,
-					description: ps.myMutualLink.description ?? null,
-					imgUrl: this.driveFileEntityService.getPublicUrl(file),
-				};
-			} else if (ps.myMutualLink === null) {
-				profileUpdates.myMutualLink = null;
+
+				if (banner) {
+					this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? null, ps.myMutualBanner.fileId ?? null);
+				} else {
+					if (ps.myMutualBanner.url) {
+						this.userBannerService.create(user.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url, ps.myMutualBanner.fileId);
+					}
+				}
 			}
 
 			if (ps.bannerId) {

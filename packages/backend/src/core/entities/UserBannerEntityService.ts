@@ -1,0 +1,52 @@
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { bindThis } from '@/decorators.js';
+import type { MiUser } from '@/models/User.js';
+import { DI } from '@/di-symbols.js';
+import type { DriveFilesRepository, MiUserBanner, UserBannerRepository } from '@/models/_.js';
+import { IdentifiableError } from '@/misc/identifiable-error.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import type { Packed } from '@/misc/json-schema.js';
+@Injectable()
+export class UserBannerEntityService implements OnModuleInit {
+	private userEntityService: UserEntityService;
+	constructor(
+		@Inject(DI.userBannerRepository)
+		private userBannerRepository: UserBannerRepository,
+		@Inject(DI.driveFilesRepository)
+		private driveFilesRepository: DriveFilesRepository,
+		private moduleRef: ModuleRef,
+	) {
+	}
+
+	async onModuleInit() {
+		this.userEntityService = this.moduleRef.get(UserEntityService.name);
+	}
+
+	@bindThis
+	public async pack(
+		src: MiUserBanner | MiUserBanner['id'],
+		me: { id: MiUser['id'] } | null | undefined,
+	): Promise<Packed<'UserBanner'>> {
+		const banner = typeof src === 'object' ? src : await this.userBannerRepository.findOneByOrFail({ id: src });
+		if (!banner) throw new IdentifiableError('9dab45d9-cc66-4dfa-8305-610834e7f256', 'No such banner.');
+		const file = await this.driveFilesRepository.findOneByOrFail({ id: banner.fileId });
+
+		return {
+			id: banner.id,
+			user: await this.userEntityService.pack(banner.userId, me),
+			description: banner.description,
+			imgUrl: file.url,
+			url: banner.url,
+		};
+	}
+
+	@bindThis
+	public async packMany(
+		src: MiUserBanner[] | MiUserBanner['id'][],
+		me: { id: MiUser['id'] } | null | undefined,
+	): Promise<Packed<'UserBanner'>[]> {
+		const banners = await Promise.all((src as MiUserBanner['id'][]).map(id => this.pack(id, me)));
+		return banners;
+	}
+}

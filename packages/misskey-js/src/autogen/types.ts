@@ -3812,17 +3812,6 @@ export type components = {
           value: string;
         }[];
       verifiedLinks: string[];
-			mutualLinks: {
-				url: string;
-				fileId: components['schemas']['DriveFile']['id'];
-				description: string | null;
-				imgUrl: string;
-			}[];
-			myMutualLink: {
-				fileId: components['schemas']['DriveFile']['id'];
-				description: string | null;
-				imgUrl: string;
-			} | null;
       followersCount: number;
       followingCount: number;
       notesCount: number;
@@ -3855,6 +3844,30 @@ export type components = {
       /** @enum {string} */
       notify?: 'normal' | 'none';
       withReplies?: boolean;
+      mutualBanners: (({
+          /** Format: id */
+          id: string;
+          user: components['schemas']['UserLite'];
+          description: string | null;
+          /** Format: url */
+          imgUrl: string;
+          /** Format: url */
+          url: string;
+          /** Format: id */
+          fileId: string;
+        })[]) | null;
+      myMutualBanner: ({
+        /** Format: id */
+        id: string;
+        user: components['schemas']['UserLite'];
+        description: string | null;
+        /** Format: url */
+        imgUrl: string;
+        /** Format: url */
+        url: string;
+        /** Format: id */
+        fileId: string;
+      }) | null;
     };
     MeDetailedOnly: {
       /** Format: id */
@@ -4039,6 +4052,15 @@ export type components = {
     MeDetailed: components['schemas']['UserLite'] & components['schemas']['UserDetailedNotMeOnly'] & components['schemas']['MeDetailedOnly'];
     UserDetailed: components['schemas']['UserDetailedNotMe'] | components['schemas']['MeDetailed'];
     User: components['schemas']['UserLite'] | components['schemas']['UserDetailed'];
+    UserBanner: {
+      /** Format: id */
+      id: string;
+      user: components['schemas']['UserLite'];
+      description: string | null;
+      /** Format: url */
+      imgUrl: string;
+      url: string | null;
+    };
     UserList: {
       /**
        * Format: id
@@ -4921,6 +4943,7 @@ export type components = {
       canSearchNotes: boolean;
       canUseTranslator: boolean;
       canUseDriveFileInSoundSettings: boolean;
+      canUseReaction: boolean;
       canHideAds: boolean;
       driveCapacityMb: number;
       alwaysMarkNsfw: boolean;
@@ -20222,6 +20245,20 @@ export type operations = {
           };
           emailNotificationTypes?: string[];
           alsoKnownAs?: string[];
+          mutualLinks?: ({
+              url: string;
+              /** Format: misskey:id */
+              fileId: string;
+              description?: string | null;
+            })[];
+          /** Format: misskey:id */
+          mutualBannerPining?: string | null;
+          myMutualBanner?: {
+            /** Format: misskey:id */
+            fileId: string;
+            description?: string;
+            url?: string;
+          } | null;
         };
       };
     };
@@ -28254,3 +28291,4 @@ export type operations = {
     };
   };
 };
+

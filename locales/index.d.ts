@@ -5084,9 +5084,9 @@ export interface Locale extends ILocale {
      */
     "here": string;
     /**
-     * 相互リンク
+     * 相互バナー
      */
-    "mutualLink": string;
+    "mutualBanner": string;
     /**
      * このユーザーのバナー
      */
@@ -8817,28 +8817,19 @@ export interface Locale extends ILocale {
         /**
          * 自身の相互リンクのバナーを設定
          */
-        "myMutualLinkBanner": string;
+        "myMutualBanner": string;
         /**
          * あなた自身が相互リンクのバナーとして設定してほしい画像を設定することができます。
          */
-        "myMutualLinkDescription": string;
+        "myMutualBannerDescription": string;
         /**
          * 相互リンクのバナー
          */
-        "mutualLinksBanner": string;
+        "mutualBanner": string;
         /**
          * 説明
          */
-        "mutualLinksDescriptionEdit": string;
-        /**
-         * リンク先のURL
-         */
-        "mutualLinksUrl": string;
-        /**
-         * 相互リンクを設定すると、あなたのプロフィールや、プロフィールの相互リンクタブにバナーが表示されます。
-         * また、9つ目まではプロフィールに表示されます。
-         */
-        "mutualLinksDescription": string;
+        "mutualBannerDescriptionEdit": string;
     };
     "_exportOrImport": {
         /**

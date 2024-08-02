@@ -87,75 +87,28 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</MkFolder>
 		<template #caption>{{ i18n.ts._profile.metadataDescription }}</template>
 	</FormSlot>
-
-	<FormSlot>
-		<MkFolder>
-			<template #icon><i class="ti ti-link"></i></template>
-			<template #label>{{ i18n.ts._profile.mutualLinksEdit }}</template>
-
-			<div :class="$style.metadataRoot">
-				<div :class="$style.metadataMargin">
-					<MkButton :disabled="mutualLinks.length >= 16" inline style="margin-right: 8px;" @click="addMutualLinks"><i class="ti ti-plus"></i> {{ i18n.ts.add }}</MkButton>
-					<MkButton v-if="!mutualLinksEditMode" :disabled="mutualLinks.length <= 1" inline danger style="margin-right: 8px;" @click="mutualLinksEditMode = !mutualLinksEditMode"><i class="ti ti-trash"></i> {{ i18n.ts.delete }}</MkButton>
-					<MkButton v-else inline style="margin-right: 8px;" @click="mutualLinksEditMode = !mutualLinksEditMode"><i class="ti ti-arrows-sort"></i> {{ i18n.ts.rearrange }}</MkButton>
-					<MkButton inline primary @click="saveMutualLinks"><i class="ti ti-check"></i> {{ i18n.ts.save }}</MkButton>
-				</div>
-
-				<Sortable
-					v-model="mutualLinks"
-					class="_gaps_s"
-					itemKey="id"
-					:animation="150"
-					:handle="'.' + $style.dragItemHandle"
-					@start="e => e.item.classList.add('active')"
-					@end="e => e.item.classList.remove('active')"
-				>
-					<template #item="{element, index}">
-						<div :class="$style.fieldDragItem">
-							<button v-if="!mutualLinksEditMode" class="_button" :class="$style.dragItemHandle" tabindex="-1"><i class="ti ti-menu"></i></button>
-							<button v-if="mutualLinksEditMode" :disabled="mutualLinks.length <= 1" class="_button" :class="$style.dragItemRemove" @click="deleteMutualLinks(index)"><i class="ti ti-x"></i></button>
-							<div :class="$style.dragItemForm">
-								<FormSplit :minWidth="200">
-									<div>
-										<MkInput v-model="element.url" small>
-											<template #label>{{ i18n.ts._profile.mutualLinksUrl }}</template>
-										</MkInput>
-										<MkInput v-model="element.description" small>
-											<template #label>{{ i18n.ts._profile.mutualLinksDescriptionEdit }}</template>
-										</MkInput>
-										<p>{{ i18n.ts._profile.mutualLinksBanner }}</p>
-										<img style="max-width: 300px;min-width: 200px;max-height: 60px;min-height: 40px;object-fit: contain;" :src="element.imgUrl">
-										<MkButton class="_button" @click="ev => chengeMutualLinkFile(ev, index)">{{ i18n.ts.selectFile }}</MkButton>
-									</div>
-								</FormSplit>
-							</div>
-						</div>
-					</template>
-				</Sortable>
-			</div>
-		</MkFolder>
-
-		<template #caption>{{ i18n.ts._profile.mutualLinksDescription }}</template>
-	</FormSlot>
 	<FormSlot>
 		<MkFolder class="_margin">
 			<template #icon><i class="ti ti-link"></i></template>
-			<template #label>{{ i18n.ts._profile.myMutualLinkBanner }}</template>
+			<template #label>{{ i18n.ts._profile.myMutualBanner }}</template>
 
-			<MkInput v-model="myMutualLink.description" class="_margin" small>
-				<template #label>{{ i18n.ts._profile.mutualLinksDescriptionEdit }}</template>
+			<MkInput v-model="myMutualBanner.description" class="_margin" small>
+				<template #label>{{ i18n.ts._profile.mutualBannerDescriptionEdit }}</template>
+			</MkInput>
+			<MkInput v-model="myMutualBanner.url" class="_margin" type="url" small>
+				<template #label>URL</template>
 			</MkInput>
 			<div>
-				<p>{{ i18n.ts._profile.mutualLinksBanner }}</p>
-				<img class="_margin" :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="myMutualLink.imgUrl">
+				<p>{{ i18n.ts._profile.mutualBanner }}</p>
+				<img class="_margin" :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="myMutualBanner.imgUrl">
 				<MkButton class="_button _margin" @click="ev => chengeMutualLinkFile(ev)">{{ i18n.ts.selectFile }}</MkButton>
 			</div>
 
-			<MkButton class="_button" primary @click="saveMyMutualLink">{{ i18n.ts.save }}</MkButton>
-			<MkButton class="_button" primary @click="deleteMyMutualLink">{{ i18n.ts.delete }}</MkButton>
+			<MkButton class="_button" primary @click="saveMyMutualBanner">{{ i18n.ts.save }}</MkButton>
+			<MkButton class="_button" primary @click="deleteMyMutualBanner">{{ i18n.ts.delete }}</MkButton>
 		</MkFolder>
 		<template #caption>
-			<span>{{ i18n.ts._profile.myMutualLinkDescription }}<br>
+			<span>{{ i18n.ts._profile.myMutualBannerDescription }}<br>
 				{{ i18n.ts.recommended }} 200x40<br>
 				{{ i18n.ts.maximum }} 300x60
 			</span>
@@ -226,10 +179,13 @@ watch(() => profile, () => {
 });
 
 const fields = ref($i.fields.map(field => ({ id: Math.random().toString(), name: field.name, value: field.value })) ?? []);
-const mutualLinks = ref($i.mutualLinks);
-const myMutualLink = ref($i.myMutualLink ?? { description: '', imgUrl: '', fileId: '' });
+const myMutualBanner = ref<{fileId: string; description?: string; url?: string;imgUrl?: string;}>({
+	fileId: $i.myMutualBanner?.fileId ?? '',
+	description: $i.myMutualBanner?.description ?? '',
+	url: $i.myMutualBanner?.url ?? '',
+	imgUrl: $i.myMutualBanner?.imgUrl ?? '',
+});
 const fieldEditMode = ref(false);
-const mutualLinksEditMode = ref(false);
 
 function addField() {
 	fields.value.push({
@@ -239,28 +195,12 @@ function addField() {
 	});
 }
 
-function addMutualLinks() {
-	mutualLinks.value.push({
-		url: '',
-		description: '',
-		fileId: '',
-	});
-}
-
 while (fields.value.length < 4) {
 	addField();
 }
 
-while (mutualLinks.value.length < 4) {
-	addMutualLinks();
-}
-
 function deleteField(index: number) {
 	fields.value.splice(index, 1);
-}
-
-function deleteMutualLinks(index: number) {
-	mutualLinks.value.splice(index, 1);
 }
 
 function saveFields() {
@@ -270,14 +210,10 @@ function saveFields() {
 	globalEvents.emit('requestClearPageCache');
 }
 
-function saveMutualLinks() {
-	os.apiWithDialog('i/update', {
-		mutualLinks: mutualLinks.value.filter(mutualLink => mutualLink.fileId !== '' && mutualLink.url !== '').map(mutualLink => ({ description: mutualLink.description !== '' ? mutualLink.description : null, fileId: mutualLink.fileId, url: mutualLink.url })),
-	});
-}
-
-function saveMyMutualLink() {
-	if (myMutualLink.value.fileId === '' || myMutualLink.value.url === '') {
+function saveMyMutualBanner() {
+	console.log(myMutualBanner.value);
+	console.log($i.myMutualBanner);
+	if ( myMutualBanner.value.fileId === '' || myMutualBanner.value.url === '') {
 		os.alert({
 			type: 'error',
 			title: i18n.ts.invalidParamError,
@@ -286,15 +222,19 @@ function saveMyMutualLink() {
 		return;
 	}
 	os.apiWithDialog('i/update', {
-		myMutualLink: myMutualLink.value,
+		myMutualBanner: {
+			fileId: myMutualBanner.value.fileId,
+			description: myMutualBanner.value.description,
+			url: myMutualBanner.value.url,
+		},
 	});
 }
 
-function deleteMyMutualLink() {
+function deleteMyMutualBanner() {
 	os.apiWithDialog('i/update', {
-		myMutualLink: null,
+		myMutualBanner: null,
 	});
-	myMutualLink.value = { description: '', imgUrl: '', fileId: '' };
+	myMutualBanner.value = { fileId: '', description: '', url: '' };
 }
 
 function save() {
@@ -324,13 +264,13 @@ function save() {
 }
 
 function chengeMutualLinkFile(ev: MouseEvent, index?: number) {
-	selectFile(ev.currentTarget ?? ev.target, i18n.ts.mutualLink).then(async (file) => {
+	selectFile(ev.currentTarget ?? ev.target, i18n.ts.mutualBanner).then(async (file) => {
 		if (index !== undefined) {
-			mutualLinks.value[index].imgUrl = file.url;
-			mutualLinks.value[index].fileId = file.id;
+			myMutualBanner.value[index].imgUrl = file.url;
+			myMutualBanner.value[index].fileId = file.id;
 		} else {
-			myMutualLink.value.imgUrl = file.url;
-			myMutualLink.value.fileId = file.id;
+			myMutualBanner.value.imgUrl = file.url;
+			myMutualBanner.value.fileId = file.id;
 		}
 	});
 }

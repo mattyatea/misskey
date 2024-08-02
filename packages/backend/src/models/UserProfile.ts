@@ -46,25 +46,6 @@ export class MiUserProfile {
 	@Column('jsonb', {
 		default: [],
 	})
-	public mutualLinks: {
-		url: string;
-		fileId: MiDriveFile['id'];
-		description: string | null;
-		imgUrl: string;
-	}[];
-
-	@Column('jsonb', {
-		nullable: true,
-	})
-	public myMutualLink: {
-		fileId: MiDriveFile['id'];
-		description: string | null;
-		imgUrl: string;
-	} | null;
-
-	@Column('jsonb', {
-		default: [],
-	})
 	public fields: {
 		name: string;
 		value: string;

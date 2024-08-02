@@ -143,20 +143,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</dd>
 						</dl>
 					</div>
-					<div v-if="user?.myMutualLink" class="fields">
+					<div v-if="user?.myMutualBanner" class="fields">
 						{{ i18n.ts.mutualBannerThisUser }}
 
 						<div :style="{display: 'flex',justifyContent: 'space-around',flexFlow: 'column wrap',alignItems: 'center'}">
-							<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="user.myMutualLink.imgUrl" :alt="user.myMutualLink.description"/>
-							<span>{{ (user.myMutualLink?.description === '' || user.myMutualLink?.description === null) ? i18n.ts.noDescription : user.myMutualLink?.description }}</span>
+							<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="user.myMutualBanner.imgUrl" :alt="user.myMutualBanner.description"/>
+							<span>{{ (user.myMutualBanner?.description === '' || user.myMutualBanner?.description === null) ? i18n.ts.noDescription : user.myMutualBanner?.description }}</span>
+							<MkButton v-if="$i && $i?.id !== user.id && !$i?.mutualBanners?.some(banner => banner.id === user.myMutualBanner?.id) " @click="mutualBannerFollow(user.myMutualBanner?.id)">{{ i18n.ts.follow }}</MkButton>
+							<MkButton v-else @click="mutualBannerUnFollow(user.myMutualBanner?.id)">{{ i18n.ts.unfollow }}</MkButton>
 						</div>
 					</div>
-					<div v-if="user?.mutualLinks && user?.mutualLinks.length > 0" class="fields">
-						{{ i18n.ts.mutualLink }}
+					<div v-if="user?.mutualBanners && user?.mutualBanners.length > 0" class="fields">
+						{{ i18n.ts.mutualBanner }}
 						<div :style="{display:'flex', justifyContent: 'space-around',flexWrap: 'wrap'}">
-							<div v-for="(mutualLink, i) in user.mutualLinks.slice(0, 9)" :key="i">
-								<MkLink :hideIcon="true" :url="mutualLink.url">
-									<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="mutualLink.imgUrl" :alt="mutualLink.description"/>
+							<div v-for="(mutualBanner, i) in mutualBanners?.slice(0, 9)" :key="i">
+								<MkLink :hideIcon="true" :url="mutualBanner.url">
+									<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="mutualBanner.imgUrl" :alt="mutualBanner.description"/>
 								</MkLink>
 							</div>
 						</div>
@@ -272,6 +274,7 @@ const memoDraft = ref(props.user.memo);
 const isEditingMemo = ref(false);
 const moderationNote = ref(props.user.moderationNote);
 const editModerationNote = ref(false);
+const mutualBanners = ref(props.user.mutualBanners);
 
 watch(moderationNote, async () => {
 	await misskeyApi('admin/update-user-note', { userId: props.user.id, text: moderationNote.value });
@@ -316,6 +319,20 @@ function showMemoTextarea() {
 	nextTick(() => {
 		memoTextareaEl.value?.focus();
 	});
+}
+
+function mutualBannerFollow(id: string) {
+	os.apiWithDialog('i/update', {
+		mutualBannerPining: id,
+	});
+	mutualBanners.value = mutualBanners.value.filter(b => b.id !== id);
+}
+
+function mutualBannerUnFollow(id:string) {
+	os.apiWithDialog('i/update', {
+		mutualBannerPining: id,
+	});
+	mutualBanners.value = mutualBanners.value.filter((banner) => banner.id !== id);
 }
 
 function adjustMemoTextarea() {

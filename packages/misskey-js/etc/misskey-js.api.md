@@ -1783,6 +1783,7 @@ declare namespace entities {
         MeDetailed,
         UserDetailed,
         User,
+        UserBanner,
         UserList,
         UserListMembership,
         Ad,
@@ -3052,6 +3053,9 @@ function toString_2(acct: Acct): string;
 
 // @public (undocumented)
 type User = components['schemas']['User'];
+
+// @public (undocumented)
+type UserBanner = components['schemas']['UserBanner'];
 
 // @public (undocumented)
 type UserDetailed = components['schemas']['UserDetailed'];

@@ -11,18 +11,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<option :value="null">{{ i18n.ts.notes }}</option>
 			<option value="all">{{ i18n.ts.all }}</option>
 			<option value="files">{{ i18n.ts.withFiles }}</option>
-			<option value="mutualLinks">{{ i18n.ts.mutualLink }}</option>
+			<option value="mutualBanners">{{ i18n.ts.mutualBanner }}</option>
 		</MkTab>
 	</template>
-	<MkNotes v-if="tab !== 'mutualLinks'" :noGap="true" :pagination="pagination" :class="$style.tl"/>
-	<div v-else-if="tab === 'mutualLinks' ">
-		<div :class="$style.mutualLinks">
-			<div v-for="(mutualLink, i) in user.mutualLinks" :key="i" class="_margin">
-				<MkLink :hideIcon="true" :url="mutualLink.url">
-					<img :class="$style.banner" :src="mutualLink.imgUrl"/>
+	<MkNotes v-if="tab !== 'mutualBanners'" :noGap="true" :pagination="pagination" :class="$style.tl"/>
+	<div v-else-if="tab === 'mutualBanners' ">
+		<div v-if="mutualBanners && mutualBanners.length > 0" :class="$style.mutualBanners">
+			<div v-for="(mutualBanner, i) in mutualBanners" :key="i" class="_margin">
+				<MkLink :hideIcon="true" :url="mutualBanner.url">
+					<img :class="$style.banner" :src="mutualBanner.imgUrl"/>
 				</MkLink>
-				<p>{{ (mutualLink.description === '' || mutualLink.description === null) ? i18n.ts.noDescription : mutualLink.description }}</p>
+				<p>{{ (mutualBanner.description === '' || mutualBanner.description === null) ? i18n.ts.noDescription : mutualBanner.description }}</p>
+				<MkButton v-if="$i?.id === user.id" @click="mutualBannerUnFollow(mutualBanner.id)">{{ i18n.ts.unfollow }}</MkButton>
 			</div>
+		</div>
+		<div v-else>
+			<p>{{ i18n.ts.nothing }}</p>
 		</div>
 	</div>
 	<div v-else>
@@ -38,10 +42,15 @@ import MkNotes from '@/components/MkNotes.vue';
 import MkTab from '@/components/MkTab.vue';
 import { i18n } from '@/i18n.js';
 import MkLink from '@/components/MkLink.vue';
+import MkButton from '@/components/MkButton.vue';
+import { $i } from '@/account.js';
+import * as os from '@/os.js';
 
 const props = defineProps<{
 	user: Misskey.entities.UserDetailed;
 }>();
+
+const mutualBanners = ref(props.user.mutualBanners);
 
 const tab = ref<string | null>('all');
 
@@ -62,6 +71,14 @@ const pagination = computed(() => tab.value === 'featured' ? {
 		withChannelNotes: true,
 	},
 });
+
+function mutualBannerUnFollow(id:string) {
+	os.apiWithDialog('i/update', {
+		mutualBannerPining: id,
+	});
+	mutualBanners.value = mutualBanners.value.filter((banner) => banner.id !== id);
+}
+
 </script>
 
 <style lang="scss" module>
@@ -82,7 +99,7 @@ const pagination = computed(() => tab.value === 'featured' ? {
 	min-height: 40px;
 	object-fit: contain;
 }
-.mutualLinks{
+.mutualBanners{
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-around;
