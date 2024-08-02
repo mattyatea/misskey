@@ -433,6 +433,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 			nullable: true, optional: false,
 			items: {
 				type: 'object',
+				nullable: false, optional: false,
 				properties: {
 					id: {
 						type: 'string',
@@ -814,4 +815,4 @@ export const packedUserBannerSchema = {
 			nullable: true, optional: false,
 		},
 	},
-};
+} as const;
