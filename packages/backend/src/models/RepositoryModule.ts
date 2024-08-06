@@ -207,6 +207,7 @@ const $userNotePiningsRepository: Provider = {
 	useFactory: (db: DataSource) => db.getRepository(MiUserNotePining),
 	inject: [DI.db],
 };
+
 const $userBannerRepository: Provider = {
 	provide: DI.userBannerRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiUserBanner),
