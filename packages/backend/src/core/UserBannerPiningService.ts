@@ -18,6 +18,7 @@ export class UserBannerPiningService {
 	) {
 
 	}
+
 	/**
 	*	指定したユーザーのバナーをピン留めします
 	* @param userId
