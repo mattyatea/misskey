@@ -14,6 +14,7 @@ export class UserBannerService {
 		private userBannerRepository: UserBannerRepository,
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
+
 		private idService: IdService,
 	) {
 
