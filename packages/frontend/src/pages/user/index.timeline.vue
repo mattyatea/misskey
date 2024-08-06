@@ -100,6 +100,7 @@ function mutualBannerUnFollow(id:string) {
 	min-height: 40px;
 	object-fit: contain;
 }
+
 .mutualBanners{
 	display: flex;
 	flex-wrap: wrap;
