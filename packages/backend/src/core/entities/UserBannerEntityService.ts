@@ -7,6 +7,7 @@ import type { DriveFilesRepository, MiUserBanner, UserBannerRepository } from '@
 import { IdentifiableError } from '@/misc/identifiable-error.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { Packed } from '@/misc/json-schema.js';
+
 @Injectable()
 export class UserBannerEntityService implements OnModuleInit {
 	private userEntityService: UserEntityService;
@@ -25,7 +26,7 @@ export class UserBannerEntityService implements OnModuleInit {
 
 	@bindThis
 	public async pack(
-		src: MiUserBanner | MiUserBanner['id'],
+		src: MiUserBanner | MiUserBanner['id'] | null | undefined,
 		me: { id: MiUser['id'] } | null | undefined,
 	): Promise<Packed<'UserBanner'>> {
 		const banner = typeof src === 'object' ? src : await this.userBannerRepository.findOneByOrFail({ id: src });
@@ -46,7 +47,8 @@ export class UserBannerEntityService implements OnModuleInit {
 		src: MiUserBanner[] | MiUserBanner['id'][],
 		me: { id: MiUser['id'] } | null | undefined,
 	): Promise<Packed<'UserBanner'>[]> {
-		const banners = await Promise.all((src as MiUserBanner['id'][]).map(id => this.pack(id, me)));
-		return banners;
+		return (await Promise.allSettled(src.map(x => this.pack(x, me))))
+			.filter(result => result.status === 'fulfilled')
+			.map(result => (result as PromiseFulfilledResult<Packed<'UserBanner'>>).value);
 	}
 }
