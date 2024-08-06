@@ -19,6 +19,7 @@ export class UserBannerService {
 	) {
 
 	}
+
 	/**
 	 *	指定したユーザーのバナーを作成します
 	 * @param userId
