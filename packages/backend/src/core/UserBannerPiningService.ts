@@ -14,6 +14,7 @@ export class UserBannerPiningService {
 		private userBannerRepository: UserBannerRepository,
 		@Inject(DI.userBannerPiningRepository)
 		private userBannerPiningRepository: UserBannerPiningRepository,
+
 		private idService: IdService,
 	) {
 
