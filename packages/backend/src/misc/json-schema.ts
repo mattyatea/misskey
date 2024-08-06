@@ -70,6 +70,7 @@ export const refs = {
 	UserDetailed: packedUserDetailedSchema,
 	User: packedUserSchema,
 	UserBanner: packedUserBannerSchema,
+
 	UserList: packedUserListSchema,
 	UserListMembership: packedUserListMembershipSchema,
 	Ad: packedAdSchema,
