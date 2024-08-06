@@ -92,6 +92,7 @@ function mutualBannerUnFollow(id:string) {
 	border-radius: var(--radius);
 	overflow: clip;
 }
+
 .banner {
 	max-width: 300px;
 	min-width: 200px;
