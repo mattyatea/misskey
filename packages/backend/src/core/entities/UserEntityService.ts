@@ -470,8 +470,10 @@ export class UserEntityService implements OnModuleInit {
 					.getMany();
 			}
 			if (user.id) {
-				myMutualBanner = await this.userBannerRepository.findOneBy({ userId: user.id });
-				mutualBanners = await this.userBannerPiningRepository.findBy({ userId: user.id });
+				[myMutualBanner, mutualBanners] = await Promise.all([
+					this.userBannerRepository.findOneBy({ userId: user.id }),
+					this.userBannerPiningRepository.findBy({ userId: user.id }),
+				]);
 			}
 		}
 

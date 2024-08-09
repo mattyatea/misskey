@@ -20,7 +20,6 @@ export class MiUserBannerPining {
 
 	@Column({
 		...id(),
-		nullable: true,
 	})
 	public pinnedBannerId: MiUserBanner['id'];
 

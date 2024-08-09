@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { In } from 'typeorm';
 import { bindThis } from '@/decorators.js';
 import { MiUser } from '@/models/User.js';
 import { MiUserBanner } from '@/models/UserBanner.js';
@@ -21,55 +22,49 @@ export class UserBannerPiningService {
 	}
 
 	/**
-	*	指定したユーザーのバナーをピン留めします
-	* @param userId
-	* @param bannerId
-	*/
+	 *	指定したユーザーのバナーをピン留めします
+	 * @param userId
+	 * @param bannerIds
+	 */
 	@bindThis
-	public async addPinned(userId:MiUser['id'], bannerId: MiUserBanner['id']) {
-		const banner = await this.userBannerRepository.findOneBy({
-			id: bannerId,
+	public async addPinned(userId: MiUser['id'], bannerIds: MiUserBanner['id'][]) {
+		const banners = await this.userBannerRepository.findBy({
+			id: In(bannerIds),
 		});
 
-		if (banner == null) {
-			throw new IdentifiableError('2bdd48b9-f47d-4bbf-94cc-a23a832e2c16', 'No such banner.');
-		}
+		const existingPins = await this.userBannerPiningRepository.findBy({
+			userId,
+			pinnedBannerId: In(bannerIds),
+		});
 
-		if (banner.userId === userId) throw new IdentifiableError('a30cd192-b837-4f63-ba31-b338a45731ff', 'You can only pin your own banner.');
-		const exist = await this.userBannerPiningRepository.exists({
-			where: {
+		const bannerIdsSet = new Set(banners.map(banner => banner.id));
+
+		const newPins = bannerIds.filter(bannerId =>
+			bannerIdsSet.has(bannerId) &&
+			!existingPins.some(pin => pin.pinnedBannerId === bannerId),
+		);
+
+		if (newPins.length > 0) {
+			const pinsToInsert = newPins.map(bannerId => ({
+				id: this.idService.gen(),
 				userId,
 				pinnedBannerId: bannerId,
-			},
-		});
+			} as MiUserBannerPining));
 
-		if (exist) throw new IdentifiableError('adbbf6f5-bbce-4685-889f-ee04fcc8b812', 'Already pinned.');
-
-		await this.userBannerPiningRepository.insert({
-			id: this.idService.gen(),
-			userId,
-			pinnedBannerId: banner.id,
-		} as MiUserBannerPining);
+			await this.userBannerPiningRepository.insert(pinsToInsert);
+		}
 	}
 
 	/**
-	 * 指定したユーザーのバナーのピン留めを解除します
+	 * 指定したユーザーのバナーのピン留めを解除しますA
 	 * @param userId
-	 * @param bannerId
+	 * @param bannerIds
 	 */
 	@bindThis
-	public async removePinned(userId:MiUser['id'], bannerId:MiUserBanner['id']) {
-		const banner = await this.userBannerRepository.findOneBy({
-			id: bannerId,
-		});
-
-		if (banner == null) {
-			throw new IdentifiableError('33f1f95e-d52c-408c-8754-70a9334a868e', 'No such banner.');
-		}
-
+	public async removePinned(userId:MiUser['id'], bannerIds:MiUserBanner['id'][]) {
 		await this.userBannerPiningRepository.delete({
 			userId,
-			pinnedBannerId: bannerId,
+			pinnedBannerId: In(bannerIds),
 		});
 	}
 }

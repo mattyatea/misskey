@@ -248,7 +248,7 @@ export const paramDef = {
 			properties: {
 				fileId: { type: 'string', format: 'misskey:id' },
 				description: { type: 'string' },
-				url: { type: 'string', nullable: true },
+				url: { type: 'string', nullable: true, format: 'url' },
 			},
 			required: ['fileId'],
 		},
@@ -375,16 +375,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				const bannerPiningNowIds = new Set(bannerPiningNow.map(b => b.pinnedBannerId));
 				const mutualBannerPiningIds = new Set(ps.mutualBannerPining);
 
-				for (const bannerId of mutualBannerPiningIds) {
-					if (!bannerPiningNowIds.has(bannerId)) {
-						await this.userBannerPiningService.addPinned(user.id, bannerId);
-					}
+				const bannersToAdd = [...mutualBannerPiningIds].filter(bannerId => !bannerPiningNowIds.has(bannerId));
+				const bannersToRemove = [...bannerPiningNowIds].filter(bannerId => !mutualBannerPiningIds.has(bannerId));
+
+				if (bannersToAdd.length > 0) {
+					await this.userBannerPiningService.addPinned(user.id, bannersToAdd);
 				}
 
-				for (const banner of bannerPiningNow) {
-					if (!mutualBannerPiningIds.has(banner.pinnedBannerId)) {
-						await this.userBannerPiningService.removePinned(user.id, banner.pinnedBannerId);
-					}
+				if (bannersToRemove.length > 0) {
+					await this.userBannerPiningService.removePinned(user.id, bannersToRemove);
 				}
 			}
 
@@ -393,14 +392,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					userId: user.id,
 				});
 				const file = await this.driveFilesRepository.findOneBy({ id: ps.myMutualBanner.fileId });
+				const profileUrl = this.config.url + '/@' + user.username;
 
 				if (file === null) throw new ApiError(meta.errors.noSuchFile);
 				if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
 
 				if (banner) {
-					await this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? 'https://' + this.config.host + '/@' + user.username, ps.myMutualBanner.fileId);
+					await this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? profileUrl, ps.myMutualBanner.fileId);
 				} else {
-					await this.userBannerService.create(user.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? 'https://' + this.config.host + '/@' + user.username, ps.myMutualBanner.fileId);
+					await this.userBannerService.create(user.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? profileUrl, ps.myMutualBanner.fileId);
 				}
 			}
 

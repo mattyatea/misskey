@@ -834,12 +834,14 @@ onUnmounted(() => {
 	justify-content: space-around;
 	align-items: center;
 	flex-flow: column wrap;
+	padding: 16px;
 }
 
 .mutualBanner {
 	display: flex;
 	justify-content: space-around;
 	flex-wrap: wrap;
+	padding: 16px;
 }
 
 .mutualBannerImg {

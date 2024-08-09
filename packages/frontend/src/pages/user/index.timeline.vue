@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</MkTab>
 	</template>
 	<MkNotes v-if="tab !== 'mutualBanners'" :noGap="true" :pagination="pagination" :class="$style.tl"/>
-	<div v-else-if="tab === 'mutualBanners' ">
+	<div v-else>
 		<div v-if="mutualBanners && mutualBanners.length > 0" :class="$style.mutualBanners">
 			<div v-for="(mutualBanner, i) in mutualBanners" :key="i" class="_margin">
 				<MkLink :hideIcon="true" :url="mutualBanner.url">
@@ -28,9 +28,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-else>
 			<p>{{ i18n.ts.nothing }}</p>
 		</div>
-	</div>
-	<div v-else>
-		<p>{{ i18n.ts.nothing }}</p>
 	</div>
 </MkStickyContainer>
 </template>
