@@ -143,28 +143,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</dd>
 						</dl>
 					</div>
-					<div v-if="user?.myMutualBanner" class="fields">
-						{{ i18n.ts.mutualBannerThisUser }}
 
-						<div :class="$style.myMutualBanner">
-							<MkLink :hideIcon="true" :url="user.myMutualBanner.url">
-								<img :class="$style.mutualBannerImg" :src="user.myMutualBanner.imgUrl" :alt="user.myMutualBanner.description"/>
-							</MkLink>
-							<span>{{ (user.myMutualBanner?.description === '' || user.myMutualBanner?.description === null) ? i18n.ts.noDescription : user.myMutualBanner?.description }}</span>
-							<MkButton v-if="$i && $i?.id !== user.id && !$i?.mutualBanners?.some(banner => banner.id === user.myMutualBanner?.id) " @click="mutualBannerFollow(user.myMutualBanner?.id)">{{ i18n.ts.follow }}</MkButton>
-							<MkButton v-else-if="$i && $i?.id !== user.id" @click="mutualBannerUnFollow(user.myMutualBanner?.id)">{{ i18n.ts.unfollow }}</MkButton>
-						</div>
-					</div>
-					<div v-if="user?.mutualBanners && user?.mutualBanners.length > 0" class="fields">
-						{{ i18n.ts.mutualBanner }}
-						<div :class="$style.mutualBanner">
-							<div v-for="(mutualBanner, i) in mutualBanners?.slice(0, 9)" :key="i">
-								<MkLink :hideIcon="true" :url="mutualBanner.url">
-									<img :class="$style.mutualBannerImg" :src="mutualBanner.imgUrl" :alt="mutualBanner.description"/>
-								</MkLink>
-							</div>
-						</div>
-					</div>
 					<div class="status">
 						<MkA :to="userPage(user)">
 							<b>{{ number(user.notesCount) }}</b>
@@ -194,6 +173,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkLazy>
 						<XActivity :key="user.id" :user="user"/>
 					</MkLazy>
+					<div v-for="(sections,index) in user?.mutualLinkSections" :key="index">
+						<MkLazy>
+							<XMutualLinks :key="user.id" :sections="sections"/>
+						</MkLazy>
+					</div>
 				</template>
 				<div v-if="!disableNotes">
 					<MkLazy>
@@ -205,6 +189,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
 			<XFiles :key="user.id" :user="user"/>
 			<XActivity :key="user.id" :user="user"/>
+			<div v-for="(sections,index) in user?.mutualLinkSections" :key="index">
+				<XMutualLinks v-if="sections" :key="user.id" :sections="sections"/>
+			</div>
 		</div>
 	</div>
 </MkSpacer>
@@ -254,6 +241,7 @@ function calcAge(birthdate: string): number {
 const XFiles = defineAsyncComponent(() => import('./index.files.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
 const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
+const XMutualLinks = defineAsyncComponent(() => import('./index.mutualLinks.vue'));
 
 const props = withDefaults(defineProps<{
 	user: Misskey.entities.UserDetailed;
@@ -276,7 +264,6 @@ const memoDraft = ref(props.user.memo);
 const isEditingMemo = ref(false);
 const moderationNote = ref(props.user.moderationNote);
 const editModerationNote = ref(false);
-const mutualBanners = ref(props.user.mutualBanners);
 
 watch(moderationNote, async () => {
 	await misskeyApi('admin/update-user-note', { userId: props.user.id, text: moderationNote.value });
@@ -320,23 +307,6 @@ function showMemoTextarea() {
 	isEditingMemo.value = true;
 	nextTick(() => {
 		memoTextareaEl.value?.focus();
-	});
-}
-
-function mutualBannerFollow(id: string) {
-	os.apiWithDialog('i/update', {
-		mutualBannerPining: [
-			...($i?.mutualBanners?.map(banner => banner.id) ?? []),
-			id,
-		],
-	});
-}
-
-function mutualBannerUnFollow(id:string) {
-	os.apiWithDialog('i/update', {
-		mutualBannerPining: [
-			...($i?.mutualBanners?.map(banner => banner.id) ?? []).filter(bannerId => bannerId !== id),
-		],
 	});
 }
 
@@ -828,28 +798,4 @@ onUnmounted(() => {
 	color: rgb(255, 255, 255);
 	background-color: rgb(54, 54, 54);
 }
-
-.myMutualBanner {
-	display: flex;
-	justify-content: space-around;
-	align-items: center;
-	flex-flow: column wrap;
-	padding: 16px;
-}
-
-.mutualBanner {
-	display: flex;
-	justify-content: space-around;
-	flex-wrap: wrap;
-	padding: 16px;
-}
-
-.mutualBannerImg {
-	max-width: 300px;
-	min-width: 200px;
-	max-height: 60px;
-	min-height: 40px;
-	object-fit: contain;
-}
-
 </style>
