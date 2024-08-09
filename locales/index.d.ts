@@ -8233,6 +8233,10 @@ export interface Locale extends ILocale {
          */
         "write:admin:unset-user-banner": string;
         /**
+         * ユーザーの相互バナーを削除する
+         */
+        "write:admin:unset-user-mutual-banner": string;
+        /**
          * ユーザーの凍結を解除する
          */
         "write:admin:unsuspend-user": string;

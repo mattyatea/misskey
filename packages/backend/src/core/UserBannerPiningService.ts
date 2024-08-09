@@ -32,14 +32,12 @@ export class UserBannerPiningService {
 			userId,
 			pinnedBannerId: bannerId,
 		} as MiUserBannerPining));
-		try {
-			await this.userBannerPiningRepository
-				.createQueryBuilder()
-				.insert()
-				.values(pinsToInsert)
-				.orIgnore()
-				.execute();
-		} catch {}
+		await this.userBannerPiningRepository
+			.createQueryBuilder()
+			.insert()
+			.values(pinsToInsert)
+			.orIgnore()
+			.execute();
 	}
 
 	/**
