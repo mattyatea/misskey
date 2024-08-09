@@ -21,7 +21,7 @@ export class UserBannerService {
 	}
 
 	/**
-	 *	指定したユーザーのバナーを作成します
+	 * 指定したユーザーのバナーを作成します
 	 * @param userId
 	 * @param description
 	 * @param url
@@ -51,7 +51,7 @@ export class UserBannerService {
 	}
 
 	/**
-	 *	指定したユーザーのバナーを作成します
+	 * 指定したユーザーのバナーを更新します
 	 * @param userId
 	 * @param bannerId
 	 * @param description
@@ -59,7 +59,7 @@ export class UserBannerService {
 	 * @param fileId
 	 */
 	@bindThis
-	public async update(userId: MiUser['id'], bannerId: MiUserBanner['id'], description: string | null, url: string | null, fileId: MiDriveFile['id'] | null ) {
+	public async update(userId: MiUser['id'], bannerId: MiUserBanner['id'], description: string | null, url: string | null, fileId: MiDriveFile['id'] ) {
 		const banner = await this.userBannerRepository.findOneBy({
 			id: bannerId,
 		});
@@ -72,40 +72,30 @@ export class UserBannerService {
 			throw new IdentifiableError('dfe79730-96f7-4d65-8c2a-b0975bf3524c', 'Not this user banner.');
 		}
 
-		if (fileId != null) {
-			const file = await this.driveFilesRepository.findOneBy({
-				id: fileId,
-			});
+		const file = await this.driveFilesRepository.findOneBy({
+			id: fileId,
+		});
 
-			if (file == null) {
-				throw new IdentifiableError('e61187d1-9270-426b-8dc6-6b233c545133', 'No such file.');
-			}
-
-			await this.userBannerRepository.update({
-				id: bannerId,
-			}, {
-				description: description ?? null,
-				fileId: file.id,
-				url: url ?? null,
-			});
-		} else {
-			await this.userBannerRepository.update({
-				id: bannerId,
-			}, {
-				description: description ?? null,
-				url: url ?? null,
-
-			});
+		if (file == null) {
+			throw new IdentifiableError('e61187d1-9270-426b-8dc6-6b233c545133', 'No such file.');
 		}
+
+		await this.userBannerRepository.update({
+			id: bannerId,
+		}, {
+			description: description ?? null,
+			fileId: file.id,
+			url: url ?? null,
+		});
 	}
 
 	/**
 	 * 指定したユーザーのバナー削除します
-	 * @param user
+	 * @param userId
 	 * @param bannerId
 	 */
 	@bindThis
-	public async delete(user: { id: MiUser['id'] }, bannerId: MiUserBanner['id']) {
+	public async delete(userId: MiUser['id'], bannerId: MiUserBanner['id']) {
 		const banner = await this.userBannerRepository.findOneBy({
 			id: bannerId,
 		});
@@ -114,7 +104,7 @@ export class UserBannerService {
 			throw new IdentifiableError('f4b158a5-610f-4ed3-b228-3507ebe1bba6', 'No such banner.');
 		}
 
-		if (banner.userId !== user.id) {
+		if (banner.userId !== userId) {
 			throw new IdentifiableError('ad84053d-0cf4-4446-ac72-209adef15835', 'Not this user banner.');
 		}
 

@@ -100,8 +100,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkInput>
 			<div>
 				<p>{{ i18n.ts._profile.mutualBanner }}</p>
-				<img class="_margin" :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="myMutualBanner.imgUrl">
-				<MkButton class="_button _margin" @click="ev => chengeMutualLinkFile(ev)">{{ i18n.ts.selectFile }}</MkButton>
+				<img class="_margin" :class="$style.mutualBannerImg" :src="myMutualBanner.imgUrl">
+				<MkButton class="_button _margin" @click="ev => changeMutualBannerFile(ev)">{{ i18n.ts.selectFile }}</MkButton>
 			</div>
 
 			<MkButton class="_button" primary @click="saveMyMutualBanner">{{ i18n.ts.save }}</MkButton>
@@ -211,8 +211,6 @@ function saveFields() {
 }
 
 function saveMyMutualBanner() {
-	console.log(myMutualBanner.value);
-	console.log($i.myMutualBanner);
 	if ( myMutualBanner.value.fileId === '' || myMutualBanner.value.url === '') {
 		os.alert({
 			type: 'error',
@@ -263,15 +261,10 @@ function save() {
 	}
 }
 
-function chengeMutualLinkFile(ev: MouseEvent, index?: number) {
+function changeMutualBannerFile(ev: MouseEvent) {
 	selectFile(ev.currentTarget ?? ev.target, i18n.ts.mutualBanner).then(async (file) => {
-		if (index !== undefined) {
-			myMutualBanner.value[index].imgUrl = file.url;
-			myMutualBanner.value[index].fileId = file.id;
-		} else {
-			myMutualBanner.value.imgUrl = file.url;
-			myMutualBanner.value.fileId = file.id;
-		}
+		myMutualBanner.value.imgUrl = file.url;
+		myMutualBanner.value.fileId = file.id;
 	});
 }
 
@@ -422,4 +415,13 @@ definePageMetadata(() => ({
 .dragItemForm {
 	flex-grow: 1;
 }
+
+.mutualBannerImg {
+	max-width: 300px;
+	min-width: 200px;
+	max-height: 60px;
+	min-height: 40px;
+	object-fit: contain;
+}
+
 </style>

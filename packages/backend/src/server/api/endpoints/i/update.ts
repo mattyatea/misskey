@@ -234,22 +234,13 @@ export const paramDef = {
 			uniqueItems: true,
 			items: { type: 'string' },
 		},
-		mutualLinks: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					url: { type: 'string' },
-					fileId: { type: 'string', format: 'misskey:id' },
-					description: { type: 'string', nullable: true },
-				},
-				required: ['url', 'fileId'],
-			},
-		},
 		mutualBannerPining: {
-			type: 'string',
-			format: 'misskey:id',
+			type: 'array',
 			nullable: true,
+			items: {
+				type: 'string',
+				format: 'misskey:id',
+			},
 		},
 		myMutualBanner: {
 			type: 'object',
@@ -379,13 +370,21 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			if (ps.mutualBannerPining) {
-				const bannerPiningExists = await this.userBannerPiningRepository.exists({ where: {
-					pinnedBannerId: ps.mutualBannerPining,
-				} });
-				if (bannerPiningExists) {
-					this.userBannerPiningService.removePinned(user.id, ps.mutualBannerPining);
-				} else {
-					this.userBannerPiningService.addPinned(user.id, ps.mutualBannerPining);
+				const bannerPiningNow = await this.userBannerPiningRepository.findBy({ userId: user.id });
+
+				const bannerPiningNowIds = new Set(bannerPiningNow.map(b => b.pinnedBannerId));
+				const mutualBannerPiningIds = new Set(ps.mutualBannerPining);
+
+				for (const bannerId of mutualBannerPiningIds) {
+					if (!bannerPiningNowIds.has(bannerId)) {
+						await this.userBannerPiningService.addPinned(user.id, bannerId);
+					}
+				}
+
+				for (const banner of bannerPiningNow) {
+					if (!mutualBannerPiningIds.has(banner.pinnedBannerId)) {
+						await this.userBannerPiningService.removePinned(user.id, banner.pinnedBannerId);
+					}
 				}
 			}
 
@@ -399,11 +398,18 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
 
 				if (banner) {
-					this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? null, ps.myMutualBanner.fileId ?? null);
+					await this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? null, ps.myMutualBanner.fileId);
 				} else {
-					if (ps.myMutualBanner.url) {
-						this.userBannerService.create(user.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url, ps.myMutualBanner.fileId);
-					}
+					await this.userBannerService.create(user.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? 'https://' + this.config.host + '/@' + user.username, ps.myMutualBanner.fileId);
+				}
+			}
+
+			if (ps.myMutualBanner === null) {
+				const banner = await this.userBannerRepository.findOneBy({
+					userId: user.id,
+				});
+				if (banner) {
+					await this.userBannerService.delete(user.id, banner.id);
 				}
 			}
 

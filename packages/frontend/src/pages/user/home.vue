@@ -146,19 +146,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div v-if="user?.myMutualBanner" class="fields">
 						{{ i18n.ts.mutualBannerThisUser }}
 
-						<div :style="{display: 'flex',justifyContent: 'space-around',flexFlow: 'column wrap',alignItems: 'center'}">
-							<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="user.myMutualBanner.imgUrl" :alt="user.myMutualBanner.description"/>
+						<div :class="$style.myMutualBanner">
+							<img :class="$style.mutualBannerImg" :src="user.myMutualBanner.imgUrl" :alt="user.myMutualBanner.description"/>
 							<span>{{ (user.myMutualBanner?.description === '' || user.myMutualBanner?.description === null) ? i18n.ts.noDescription : user.myMutualBanner?.description }}</span>
 							<MkButton v-if="$i && $i?.id !== user.id && !$i?.mutualBanners?.some(banner => banner.id === user.myMutualBanner?.id) " @click="mutualBannerFollow(user.myMutualBanner?.id)">{{ i18n.ts.follow }}</MkButton>
-							<MkButton v-else @click="mutualBannerUnFollow(user.myMutualBanner?.id)">{{ i18n.ts.unfollow }}</MkButton>
+							<MkButton v-else-if="$i && $i?.id !== user.id" @click="mutualBannerUnFollow(user.myMutualBanner?.id)">{{ i18n.ts.unfollow }}</MkButton>
 						</div>
 					</div>
 					<div v-if="user?.mutualBanners && user?.mutualBanners.length > 0" class="fields">
 						{{ i18n.ts.mutualBanner }}
-						<div :style="{display:'flex', justifyContent: 'space-around',flexWrap: 'wrap'}">
+						<div :class="$style.mutualBanner">
 							<div v-for="(mutualBanner, i) in mutualBanners?.slice(0, 9)" :key="i">
 								<MkLink :hideIcon="true" :url="mutualBanner.url">
-									<img :style="{maxWidth: '300px',minWidth: '200px', maxHeight: '60px', minHeight: '40px', objectFit: 'contain'}" :src="mutualBanner.imgUrl" :alt="mutualBanner.description"/>
+									<img :class="$style.mutualBannerImg" :src="mutualBanner.imgUrl" :alt="mutualBanner.description"/>
 								</MkLink>
 							</div>
 						</div>
@@ -323,16 +323,19 @@ function showMemoTextarea() {
 
 function mutualBannerFollow(id: string) {
 	os.apiWithDialog('i/update', {
-		mutualBannerPining: id,
+		mutualBannerPining: [
+			...($i?.mutualBanners?.map(banner => banner.id) ?? []),
+			id,
+		],
 	});
-	mutualBanners.value = mutualBanners.value.filter(b => b.id !== id);
 }
 
 function mutualBannerUnFollow(id:string) {
 	os.apiWithDialog('i/update', {
-		mutualBannerPining: id,
+		mutualBannerPining: [
+			...($i?.mutualBanners?.map(banner => banner.id) ?? []).filter(bannerId => bannerId !== id),
+		],
 	});
-	mutualBanners.value = mutualBanners.value.filter((banner) => banner.id !== id);
 }
 
 function adjustMemoTextarea() {
@@ -823,4 +826,26 @@ onUnmounted(() => {
 	color: rgb(255, 255, 255);
 	background-color: rgb(54, 54, 54);
 }
+
+.myMutualBanner {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-flow: column wrap;
+}
+
+.mutualBanner {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+}
+
+.mutualBannerImg {
+	max-width: 300px;
+	min-width: 200px;
+	max-height: 60px;
+	min-height: 40px;
+	object-fit: contain;
+}
+
 </style>

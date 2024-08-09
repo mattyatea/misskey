@@ -22,11 +22,11 @@ export class MiUserBannerPining {
 		...id(),
 		nullable: true,
 	})
-	public pinnedBannerId: MiUserBanner['id'] | null;
+	public pinnedBannerId: MiUserBanner['id'];
 
 	@ManyToOne(type => MiUserBanner, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
-	public pinnedBanner: MiUserBanner | null;
+	public pinnedBanner: MiUserBanner;
 }

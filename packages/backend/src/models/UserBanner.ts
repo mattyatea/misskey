@@ -31,7 +31,6 @@ export class MiUserBanner {
 
 	@Column({
 		...id(),
-		nullable: true,
 	})
 	public fileId: MiDriveFile['id'];
 

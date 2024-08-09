@@ -74,11 +74,14 @@ const pagination = computed(() => tab.value === 'featured' ? {
 
 function mutualBannerUnFollow(id:string) {
 	os.apiWithDialog('i/update', {
-		mutualBannerPining: id,
+		mutualBannerPining: [
+			...($i?.mutualBanners?.map(banner => banner.id) ?? []).filter(bannerId => bannerId !== id),
+		],
 	});
-	mutualBanners.value = mutualBanners.value.filter((banner) => banner.id !== id);
+	if (mutualBanners.value) {
+		mutualBanners.value = mutualBanners.value.filter(banner => banner.id !== id);
+	}
 }
-
 </script>
 
 <style lang="scss" module>

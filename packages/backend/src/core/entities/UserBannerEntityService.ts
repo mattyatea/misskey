@@ -29,8 +29,9 @@ export class UserBannerEntityService implements OnModuleInit {
 		src: MiUserBanner | MiUserBanner['id'] | null | undefined,
 		me: { id: MiUser['id'] } | null | undefined,
 	): Promise<Packed<'UserBanner'>> {
+		if (!src) throw new IdentifiableError('9dab45d9-cc66-4dfa-8305-610834e7f256', 'No such banner.');
+
 		const banner = typeof src === 'object' ? src : await this.userBannerRepository.findOneByOrFail({ id: src });
-		if (!banner) throw new IdentifiableError('9dab45d9-cc66-4dfa-8305-610834e7f256', 'No such banner.');
 		const file = await this.driveFilesRepository.findOneByOrFail({ id: banner.fileId });
 
 		return {

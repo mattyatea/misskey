@@ -1,8 +1,8 @@
-export class MutualBanner1722413661125 {
-    name = 'MutualBanner1722413661125'
+export class MutualBanner1723176990027 {
+    name = 'MutualBanner1723176990027'
 
     async up(queryRunner) {
-        await queryRunner.query(`CREATE TABLE "user_banner" ("id" character varying(32) NOT NULL, "userId" character varying(32) NOT NULL, "description" character varying, "fileId" character varying(32), CONSTRAINT "PK_0d9a418f048e308dbfb6562149d" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "user_banner" ("id" character varying(32) NOT NULL, "userId" character varying(32) NOT NULL, "description" character varying(1024), "url" character varying(1024), "fileId" character varying(32) NOT NULL, CONSTRAINT "PK_0d9a418f048e308dbfb6562149d" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_fa06ea2e2375449537ced781f1" ON "user_banner" ("userId") `);
         await queryRunner.query(`CREATE TABLE "user_banner_pining" ("id" character varying(32) NOT NULL, "userId" character varying(32) NOT NULL, "pinnedBannerId" character varying(32), CONSTRAINT "PK_970d24f72e8d2b20f8c21ec5d11" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_3b74dc21b68da606011c81609c" ON "user_banner_pining" ("userId") `);

@@ -9,7 +9,6 @@ import { id } from './util/id.js';
 import { MiUser } from './User.js';
 import { MiPage } from './Page.js';
 import { MiUserList } from './UserList.js';
-import type { MiDriveFile } from './DriveFile.js';
 
 // TODO: このテーブルで管理している情報すべてレジストリで管理するようにしても良いかも
 //       ただ、「emailVerified が true なユーザーを find する」のようなクエリは書けなくなるからウーン

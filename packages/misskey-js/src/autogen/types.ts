@@ -20245,14 +20245,7 @@ export type operations = {
           };
           emailNotificationTypes?: string[];
           alsoKnownAs?: string[];
-          mutualLinks?: ({
-              url: string;
-              /** Format: misskey:id */
-              fileId: string;
-              description?: string | null;
-            })[];
-          /** Format: misskey:id */
-          mutualBannerPining?: string | null;
+          mutualBannerPining?: string[] | null;
           myMutualBanner?: {
             /** Format: misskey:id */
             fileId: string;

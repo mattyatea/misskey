@@ -67,7 +67,7 @@ export class UserBannerPiningService {
 			throw new IdentifiableError('33f1f95e-d52c-408c-8754-70a9334a868e', 'No such banner.');
 		}
 
-		this.userBannerPiningRepository.delete({
+		await this.userBannerPiningRepository.delete({
 			userId,
 			pinnedBannerId: bannerId,
 		});
