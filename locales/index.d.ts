@@ -2401,6 +2401,14 @@ export interface Locale extends ILocale {
      */
     "unsetUserBannerConfirm": string;
     /**
+     * 相互バナーを解除
+     */
+    "unsetUserMutualBanner": string;
+    /**
+     * 相互バナーを解除しますか？
+     */
+    "unsetUserMutualBannerConfirm": string;
+    /**
      * すべてのファイルを削除
      */
     "deleteAllFiles": string;

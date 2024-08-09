@@ -4,6 +4,7 @@ import { id } from './util/id.js';
 import { MiUser } from './User.js';
 
 @Entity('user_banner_pining')
+@Index(['userId', 'pinnedBannerId'], { unique: true })
 export class MiUserBannerPining {
 	@PrimaryColumn(id())
 	public id: string;

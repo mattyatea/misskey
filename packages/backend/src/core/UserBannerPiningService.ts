@@ -26,30 +26,20 @@ export class UserBannerPiningService {
 	 * @param userId
 	 * @param bannerIds
 	 */
-	@bindThis
 	public async addPinned(userId: MiUser['id'], bannerIds: MiUserBanner['id'][]) {
-		const banners = await this.userBannerRepository.findBy({
-			id: In(bannerIds),
-		});
-
-		const existingPins = await this.userBannerPiningRepository.findBy({
+		const pinsToInsert = bannerIds.map(bannerId => ({
+			id: this.idService.gen(),
 			userId,
-			pinnedBannerId: In(bannerIds),
-		});
-
-		const newPins = banners.filter(banner =>
-			!existingPins.some(pin => pin.pinnedBannerId === banner.id),
-		).map(banner => banner.id);
-
-		if (newPins.length > 0) {
-			const pinsToInsert = newPins.map(bannerId => ({
-				id: this.idService.gen(),
-				userId,
-				pinnedBannerId: bannerId,
-			} as MiUserBannerPining));
-
-			await this.userBannerPiningRepository.insert(pinsToInsert);
-		}
+			pinnedBannerId: bannerId,
+		} as MiUserBannerPining));
+		try {
+			await this.userBannerPiningRepository
+				.createQueryBuilder()
+				.insert()
+				.values(pinsToInsert)
+				.orIgnore()
+				.execute();
+		} catch {}
 	}
 
 	/**
