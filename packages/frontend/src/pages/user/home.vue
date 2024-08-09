@@ -147,7 +147,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 						{{ i18n.ts.mutualBannerThisUser }}
 
 						<div :class="$style.myMutualBanner">
-							<img :class="$style.mutualBannerImg" :src="user.myMutualBanner.imgUrl" :alt="user.myMutualBanner.description"/>
+							<MkLink :hideIcon="true" :url="user.myMutualBanner.url">
+								<img :class="$style.mutualBannerImg" :src="user.myMutualBanner.imgUrl" :alt="user.myMutualBanner.description"/>
+							</MkLink>
 							<span>{{ (user.myMutualBanner?.description === '' || user.myMutualBanner?.description === null) ? i18n.ts.noDescription : user.myMutualBanner?.description }}</span>
 							<MkButton v-if="$i && $i?.id !== user.id && !$i?.mutualBanners?.some(banner => banner.id === user.myMutualBanner?.id) " @click="mutualBannerFollow(user.myMutualBanner?.id)">{{ i18n.ts.follow }}</MkButton>
 							<MkButton v-else-if="$i && $i?.id !== user.id" @click="mutualBannerUnFollow(user.myMutualBanner?.id)">{{ i18n.ts.unfollow }}</MkButton>

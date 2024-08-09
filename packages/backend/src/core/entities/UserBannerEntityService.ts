@@ -40,6 +40,7 @@ export class UserBannerEntityService implements OnModuleInit {
 			description: banner.description,
 			imgUrl: file.url,
 			url: banner.url,
+			fileId: file.id,
 		};
 	}
 

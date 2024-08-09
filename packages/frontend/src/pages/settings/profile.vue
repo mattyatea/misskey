@@ -179,7 +179,7 @@ watch(() => profile, () => {
 });
 
 const fields = ref($i.fields.map(field => ({ id: Math.random().toString(), name: field.name, value: field.value })) ?? []);
-const myMutualBanner = ref<{fileId: string; description?: string; url?: string;imgUrl?: string;}>({
+const myMutualBanner = ref<{ fileId: string; description?: string; url?: string | null; imgUrl?: string; }>({
 	fileId: $i.myMutualBanner?.fileId ?? '',
 	description: $i.myMutualBanner?.description ?? '',
 	url: $i.myMutualBanner?.url ?? '',
@@ -210,8 +210,17 @@ function saveFields() {
 	globalEvents.emit('requestClearPageCache');
 }
 
+function isValidUrl(url: string): boolean {
+	try {
+		new URL(url);
+		return true;
+	} catch (_) {
+		return false;
+	}
+}
+
 function saveMyMutualBanner() {
-	if ( myMutualBanner.value.fileId === '' || myMutualBanner.value.url === '') {
+	if ( myMutualBanner.value.fileId === '' || myMutualBanner.value.url && !isValidUrl(myMutualBanner.value.url)) {
 		os.alert({
 			type: 'error',
 			title: i18n.ts.invalidParamError,
@@ -223,7 +232,7 @@ function saveMyMutualBanner() {
 		myMutualBanner: {
 			fileId: myMutualBanner.value.fileId,
 			description: myMutualBanner.value.description,
-			url: myMutualBanner.value.url,
+			url: myMutualBanner.value.url === '' ? null : myMutualBanner.value.url,
 		},
 	});
 }

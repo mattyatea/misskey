@@ -248,7 +248,7 @@ export const paramDef = {
 			properties: {
 				fileId: { type: 'string', format: 'misskey:id' },
 				description: { type: 'string' },
-				url: { type: 'string' },
+				url: { type: 'string', nullable: true },
 			},
 			required: ['fileId'],
 		},
@@ -398,7 +398,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (!file.type.startsWith('image/')) throw new ApiError(meta.errors.fileNotAnImage);
 
 				if (banner) {
-					await this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? null, ps.myMutualBanner.fileId);
+					await this.userBannerService.update(user.id, banner.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? 'https://' + this.config.host + '/@' + user.username, ps.myMutualBanner.fileId);
 				} else {
 					await this.userBannerService.create(user.id, ps.myMutualBanner.description ?? null, ps.myMutualBanner.url ?? 'https://' + this.config.host + '/@' + user.username, ps.myMutualBanner.fileId);
 				}

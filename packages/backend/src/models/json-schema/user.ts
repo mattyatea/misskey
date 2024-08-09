@@ -814,5 +814,10 @@ export const packedUserBannerSchema = {
 			type: 'string',
 			nullable: true, optional: false,
 		},
+		fileId: {
+			type: 'string',
+			format: 'id',
+			nullable: false, optional: false,
+		},
 	},
 } as const;

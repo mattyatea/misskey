@@ -4060,6 +4060,8 @@ export type components = {
       /** Format: url */
       imgUrl: string;
       url: string | null;
+      /** Format: id */
+      fileId: string;
     };
     UserList: {
       /**
@@ -20246,12 +20248,12 @@ export type operations = {
           emailNotificationTypes?: string[];
           alsoKnownAs?: string[];
           mutualBannerPining?: string[] | null;
-          myMutualBanner?: {
+          myMutualBanner?: ({
             /** Format: misskey:id */
             fileId: string;
             description?: string;
-            url?: string;
-          } | null;
+            url?: string | null;
+          }) | null;
         };
       };
     };
