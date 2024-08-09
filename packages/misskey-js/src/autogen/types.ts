@@ -20252,6 +20252,7 @@ export type operations = {
             /** Format: misskey:id */
             fileId: string;
             description?: string;
+            /** Format: url */
             url?: string | null;
           }) | null;
         };

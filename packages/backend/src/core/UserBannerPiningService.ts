@@ -37,12 +37,9 @@ export class UserBannerPiningService {
 			pinnedBannerId: In(bannerIds),
 		});
 
-		const bannerIdsSet = new Set(banners.map(banner => banner.id));
-
-		const newPins = bannerIds.filter(bannerId =>
-			bannerIdsSet.has(bannerId) &&
-			!existingPins.some(pin => pin.pinnedBannerId === bannerId),
-		);
+		const newPins = banners.filter(banner =>
+			!existingPins.some(pin => pin.pinnedBannerId === banner.id),
+		).map(banner => banner.id);
 
 		if (newPins.length > 0) {
 			const pinsToInsert = newPins.map(bannerId => ({
@@ -56,7 +53,7 @@ export class UserBannerPiningService {
 	}
 
 	/**
-	 * 指定したユーザーのバナーのピン留めを解除しますA
+	 * 指定したユーザーのバナーのピン留めを解除します
 	 * @param userId
 	 * @param bannerIds
 	 */
