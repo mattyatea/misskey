@@ -68,6 +68,7 @@ export const refs = {
 	MeDetailed: packedMeDetailedSchema,
 	UserDetailed: packedUserDetailedSchema,
 	User: packedUserSchema,
+
 	UserList: packedUserListSchema,
 	UserListMembership: packedUserListMembershipSchema,
 	Ad: packedAdSchema,
