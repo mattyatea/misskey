@@ -207,10 +207,6 @@ const $i = signinRequired();
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
 const reactionAcceptance = computed(defaultStore.makeGetterSetter('reactionAcceptance'));
 
-const isPinnedDisabled = computed(() => {
-	return mutualLinkSections.value.some(section => section.pinned);
-});
-
 const profile = reactive({
 	name: $i.name,
 	description: $i.description,
