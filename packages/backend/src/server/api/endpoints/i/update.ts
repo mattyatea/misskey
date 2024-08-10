@@ -230,7 +230,7 @@ export const paramDef = {
 			items: {
 				type: 'object',
 				properties: {
-					name: { type: 'string' },
+					name: { type: 'string', nullable: true },
 					mutualLinks: {
 						type: 'array',
 						items: {
