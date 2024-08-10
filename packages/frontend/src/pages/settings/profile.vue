@@ -201,6 +201,7 @@ import { defaultStore } from '@/store.js';
 import { globalEvents } from '@/events.js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
+import * as Misskey from "misskey-js";
 
 const $i = signinRequired();
 
@@ -223,7 +224,7 @@ watch(() => profile, () => {
 	deep: true,
 });
 
-const mutualLinkSections = ref($i.mutualLinkSections ?? []) as Ref<{name: string;pinned:boolean; mutualLinks: {fileId:string;url:string;imgSrc:string;description:string;}[]}[]>;
+const mutualLinkSections = ref($i.mutualLinkSections ?? []) as Ref<Misskey.entities.UserDetailed['mutualLinkSections']>;
 const fields = ref($i.fields.map(field => ({ id: Math.random().toString(), name: field.name, value: field.value })) ?? []);
 const fieldEditMode = ref(false);
 const mutualLinkSectionEditMode = ref(false);
@@ -248,7 +249,6 @@ function addMutualLinks(index:number) {
 function addMutualLinkSections() {
 	mutualLinkSections.value.push({
 		name: '',
-		pinned: false,
 		mutualLinks: [],
 	});
 }

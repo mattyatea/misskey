@@ -3844,7 +3844,6 @@ export type components = {
       moderationNote?: string;
       mutualLinkSections: ({
           name: string;
-          pinned: boolean;
           mutualLinks: ({
               url: string;
               /** Format: misskey:id */
@@ -20288,12 +20287,13 @@ export type operations = {
           alsoKnownAs?: string[];
           mutualLinkSections?: ({
               name: string;
-              pinned?: boolean;
               mutualLinks: ({
+                  /** Format: url */
                   url: string;
                   /** Format: misskey:id */
                   fileId: string;
                   description?: string | null;
+                  imgSrc?: string | null;
                 })[];
             })[];
         };

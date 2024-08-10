@@ -231,7 +231,6 @@ export const paramDef = {
 				type: 'object',
 				properties: {
 					name: { type: 'string' },
-					pinned: { type: 'boolean' },
 					mutualLinks: {
 						type: 'array',
 						items: {
@@ -240,6 +239,7 @@ export const paramDef = {
 								url: { type: 'string', format: 'url' },
 								fileId: { type: 'string', format: 'misskey:id' },
 								description: { type: 'string', nullable: true },
+								imgSrc: { type: 'string', nullable: true },
 							},
 							required: ['url', 'fileId'],
 						},
@@ -387,7 +387,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 					return {
 						name: section.name,
-						pinned: section.pinned,
 						mutualLinks,
 					};
 				});

@@ -80,8 +80,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<p v-else class="empty">{{ i18n.ts.noAccountDescription }}</p>
 						</MkOmit>
 					</div>
-					<MkContainer :showHeader="false" :max-height="200" class="fields" :style="{borderRadius: 0}">
-						<div v-for="section in user?.mutualLinkSections" :class="$style.mutualLinkSections">
+					<MkContainer v-if="user?.mutualLinkSections.length > 0" :showHeader="false" :max-height="200" class="fields" :style="{borderRadius: 0}">
+						<div v-for="(section,index) in user?.mutualLinkSections" :key="index" :class="$style.mutualLinkSections">
 							<span>{{ section.name }}</span>
 							<div :class="$style.mutualLinks">
 								<div v-for="(mutualLink, i) in section.mutualLinks.slice(0, 9)" :key="i">
@@ -246,7 +246,6 @@ function calcAge(birthdate: string): number {
 const XFiles = defineAsyncComponent(() => import('./index.files.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
 const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
-const XMutualLinks = defineAsyncComponent(() => import('./index.mutualLinks.vue'));
 
 const props = withDefaults(defineProps<{
 	user: Misskey.entities.UserDetailed;
