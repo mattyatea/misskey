@@ -8866,6 +8866,14 @@ export interface Locale extends ILocale {
          * セクション名
          */
         "sectionName": string;
+        /**
+         * セクション名を表示しないようにする
+         */
+        "sectionNameNoneDescription": string;
+        /**
+         * セクション名を表示しない
+         */
+        "sectionNameNone": string;
     };
     "_exportOrImport": {
         /**

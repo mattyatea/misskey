@@ -63,12 +63,8 @@ defineProps<{
 }
 
 .mutualLinkImg {
-	max-width: 300px;
-	min-width: 200px;
-	max-height: 60px;
-	min-height: 40px;
-	aspect-ratio: 5 / 1;
-	object-fit: cover;
+	max-width: 150px;
+	max-height: 30px;
 }
 
 </style>

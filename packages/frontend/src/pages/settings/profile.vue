@@ -115,10 +115,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<button v-if="mutualLinkSectionEditMode" :disabled="fields.length <= 1" class="_button" :class="$style.dragItemRemove" @click="deleteMutualLinkSection(sectionIndex)"><i class="ti ti-x"></i></button>
 							<FormSlot :style="{flexGrow: 1}">
 								<MkFolder>
-									<template #label>{{ sectionElement.name }}</template>
+									<template #label>{{ sectionElement.name || i18n.ts._profile.sectionNameNone }}</template>
 
 									<div :class="$style.metadataMargin">
-										<MkInput v-model="sectionElement.name" :placeholder="i18n.ts.sectionName" :max="32"></MkInput>
+										<MkInput v-model="sectionElement.name" :disabled="sectionElement.none" :placeholder="i18n.ts._profile.sectionName" :max="32"></MkInput>
+										<MkSwitch v-model="sectionElement.none" @update:modelValue="()=>{sectionElement.name = null}">{{ i18n.ts._profile.sectionNameNoneDescription }}</MkSwitch>
 										<MkButton inline style="margin-right: 8px;" :disabled="sectionElement.mutualLinks.length >= $i.policies.mutualLinkLimit" @click="addMutualLinks(sectionIndex)"><i class="ti ti-plus"></i> {{ i18n.ts._profile.addMutualLink }}</MkButton>
 									</div>
 									<Sortable
@@ -496,11 +497,9 @@ definePageMetadata(() => ({
 }
 
 .mutualLinkImg {
-	max-width: 300px;
-	min-width: 200px;
-	max-height: 60px;
-	min-height: 40px;
-	aspect-ratio: 5 / 1;
-	object-fit: cover;
+	max-width: 150px;
+	max-height: 30px;
+	object-fit: contain;
 }
+
 </style>
