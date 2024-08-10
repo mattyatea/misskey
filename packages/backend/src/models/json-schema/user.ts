@@ -392,7 +392,6 @@ export const packedUserDetailedNotMeOnlySchema = {
 				type: 'object',
 				properties: {
 					name: { type: 'string', nullable: true },
-					pinned: { type: 'boolean' },
 					mutualLinks: {
 						type: 'array',
 						items: {
