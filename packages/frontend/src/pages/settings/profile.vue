@@ -135,7 +135,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 											<div :class="$style.mutualLinkRoot">
 												<button v-if="!mutualLinkSectionEditMode" class="_button" :class="$style.dragItemHandle" tabindex="-1"><i class="ti ti-menu"></i></button>
 												<button v-if="mutualLinkSectionEditMode" :disabled="fields.length <= 1" class="_button" :class="$style.dragItemRemove" @click="deleteMutualLink(sectionIndex,linkIndex)"><i class="ti ti-x"></i></button>
-												<div class="_gaps_s">
+
+												<div class="_gaps_s" :style="{flex: 1}">
 													<MkInput v-model="linkElement.url" small>
 														<template #label>{{ i18n.ts._profile.mutualLinksUrl }}</template>
 													</MkInput>
@@ -421,7 +422,7 @@ definePageMetadata(() => ({
 	gap: 8px;
 	padding-bottom: .75em;
 	border-bottom: solid 0.5px var(--divider);
-
+	flex: 1;
 	&:last-child {
 		border-bottom: 0;
 	}
