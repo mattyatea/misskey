@@ -80,7 +80,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<p v-else class="empty">{{ i18n.ts.noAccountDescription }}</p>
 						</MkOmit>
 					</div>
-					<MkContainer v-if="user?.mutualLinkSections.length > 0" :showHeader="false" :max-height="200" class="fields" :style="{borderRadius: 0}">
+					<MkContainer v-if="user?.mutualLinkSections?.length > 0" :showHeader="false" :max-height="200" class="fields" :style="{borderRadius: 0}">
 						<div v-for="(section,index) in user?.mutualLinkSections" :key="index" :class="$style.mutualLinkSections">
 							<span>{{ section.name }}</span>
 							<div :class="$style.mutualLinks">
