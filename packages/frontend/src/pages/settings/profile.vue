@@ -248,7 +248,7 @@ function addMutualLinks(index:number) {
 
 function addMutualLinkSections() {
 	mutualLinkSections.value.push({
-		name: '',
+		name: null,
 		mutualLinks: [],
 	});
 }
