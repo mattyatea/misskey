@@ -406,7 +406,7 @@ export const packedUserDetailedNotMeOnlySchema = {
 						},
 					},
 				},
-				required: ['name', 'mutualLinks'],
+				required: ['mutualLinks'],
 			},
 		},
 		//#region relations
