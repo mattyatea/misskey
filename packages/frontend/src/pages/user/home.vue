@@ -221,7 +221,6 @@ import { confetti } from '@/scripts/confetti.js';
 import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import { isFollowingVisibleForMe, isFollowersVisibleForMe } from '@/scripts/isFfVisibleForMe.js';
 import { useRouter } from '@/router/supplier.js';
-import MkLink from '@/components/MkLink.vue';
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);

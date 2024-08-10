@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<option value="files">{{ i18n.ts.withFiles }}</option>
 		</MkTab>
 	</template>
-	<MkNotes :pagination="pagination" :class="$style.tl"/>
+	<MkNotes :noGap="true" :pagination="pagination" :class="$style.tl"/>
 </MkStickyContainer>
 </template>
 

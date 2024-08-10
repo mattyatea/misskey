@@ -143,7 +143,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 													</MkInput>
 													<span>{{ i18n.ts._profile.mutualLinksBanner }}</span>
 													<img :class="$style.mutualLinkImg" :src="linkElement.imgSrc">
-													<MkButton class="_button" @click="ev => chengeMutualLinkFile(ev, sectionIndex, linkIndex)">{{ i18n.ts.selectFile }}</MkButton>
+													<MkButton class="_button" @click="ev => changeMutualLinkFile(ev, sectionIndex, linkIndex)">{{ i18n.ts.selectFile }}</MkButton>
 												</div>
 											</div>
 										</template>
@@ -310,7 +310,7 @@ function save() {
 	}
 }
 
-function chengeMutualLinkFile(ev: MouseEvent, sectionIndex: number, linkIndex: number) {
+function changeMutualLinkFile(ev: MouseEvent, sectionIndex: number, linkIndex: number) {
 	selectFile(ev.currentTarget ?? ev.target, i18n.ts.mutualLink).then(async (file) => {
 		mutualLinkSections.value[sectionIndex].mutualLinks[linkIndex].imgSrc = file.url;
 		mutualLinkSections.value[sectionIndex].mutualLinks[linkIndex].fileId = file.id;
