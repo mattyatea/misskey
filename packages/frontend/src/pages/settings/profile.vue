@@ -250,6 +250,7 @@ function addMutualLinks(index:number) {
 function addMutualLinkSections() {
 	mutualLinkSections.value.push({
 		name: '',
+		pinned: false,
 		mutualLinks: [],
 	});
 }
@@ -281,13 +282,6 @@ function saveMutualLinks() {
 	os.apiWithDialog('i/update', {
 		mutualLinkSections: mutualLinkSections.value,
 	});
-}
-
-function deleteMyMutualLink() {
-	os.apiWithDialog('i/update', {
-		myMutualLink: null,
-	});
-	myMutualLink.value = { description: '', imgUrl: '', fileId: '' };
 }
 
 function save() {

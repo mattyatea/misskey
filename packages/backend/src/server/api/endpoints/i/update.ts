@@ -237,7 +237,7 @@ export const paramDef = {
 						items: {
 							type: 'object',
 							properties: {
-								url: { type: 'string' },
+								url: { type: 'string', format: 'url' },
 								fileId: { type: 'string', format: 'misskey:id' },
 								description: { type: 'string', nullable: true },
 							},
