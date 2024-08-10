@@ -245,7 +245,7 @@ export const paramDef = {
 						},
 					},
 				},
-				required: ['name', 'mutualLinks'],
+				required: ['mutualLinks'],
 			},
 		},
 	},
