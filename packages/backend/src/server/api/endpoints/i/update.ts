@@ -385,7 +385,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					}));
 
 					return {
-						name: section.name,
+						name: section.name ?? null,
 						mutualLinks,
 					};
 				});

@@ -3843,7 +3843,7 @@ export type components = {
       memo: string | null;
       moderationNote?: string;
       mutualLinkSections: ({
-          name: string;
+          name: string | null;
           mutualLinks: ({
               url: string;
               /** Format: misskey:id */
@@ -20286,14 +20286,13 @@ export type operations = {
           emailNotificationTypes?: string[];
           alsoKnownAs?: string[];
           mutualLinkSections?: ({
-              name: string;
+              name?: string | null;
               mutualLinks: ({
                   /** Format: url */
                   url: string;
                   /** Format: misskey:id */
                   fileId: string;
                   description?: string | null;
-                  imgSrc?: string | null;
                 })[];
             })[];
         };

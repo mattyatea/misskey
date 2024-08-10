@@ -47,7 +47,7 @@ export class MiUserProfile {
 		default: [],
 	})
 	public mutualLinkSections: {
-		name: string;
+		name: string | null;
 		mutualLinks: {
 			fileId: MiDriveFile['id'];
 			description: string | null;
