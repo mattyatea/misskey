@@ -3929,6 +3929,10 @@ export interface Locale extends ILocale {
      */
     "cannotUploadBecauseExceedsFileSizeLimit": string;
     /**
+     * 接続がタイムアウトしたため、ファイルがアップロードできませんでした。
+     */
+    "cannotUploadBecauseTimeout": string;
+    /**
      * ベータ
      */
     "beta": string;
