@@ -10,7 +10,7 @@ import { bindThis } from '@/decorators.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { MiLocalUser, MiRemoteUser, MiUser } from '@/models/User.js';
-import type { BlockingsRepository, FollowingsRepository, InstancesRepository, MutingsRepository, UserListMembershipsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { BlockingsRepository, FollowingsRepository, InstancesRepository, MutingsRepository, UserListMembershipsRepository, UserAccountMoveLogRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import type { RelationshipJobData, ThinUser } from '@/queue/types.js';
 
 import { IdService } from '@/core/IdService.js';
@@ -50,6 +50,12 @@ export class AccountMoveService {
 
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
+
+		@Inject(DI.userAccountMoveLogRepository)
+		private userAccountMoveLogRepository: UserAccountMoveLogRepository,
+
+		@Inject(DI.config)
+		private config: Config,
 
 		private userEntityService: UserEntityService,
 		private idService: IdService,
@@ -123,6 +129,7 @@ export class AccountMoveService {
 				this.copyMutings(src, dst),
 				this.updateLists(src, dst),
 				this.updateModerationNote(src, dst),
+				this.updateAccountMoveLogs(src, dst),
 			]);
 		} catch {
 			/* skip if any error happens */
@@ -271,13 +278,32 @@ export class AccountMoveService {
 			this.userProfilesRepository.findOneBy({ userId: dst.id }),
 		]);
 		if (!srcuser || !srcprofile || !dstuser || !dstprofile) return;
-		const dstmodnote = `${dstprofile.moderationNote ? dstprofile.moderationNote + '\n' : ''}${srcuser.username}@${srcuser.host} (${srcuser.id}) から移動されました。\n${srcprofile.moderationNote ? srcprofile.moderationNote + '\n' : ''}`;
+		const dstmodnote = `
+  		@${srcuser.username}@${srcuser.host ?? this.config.hostname} (${srcuser.id}) から移動されました。
+  		${srcprofile.moderationNote ? `@${srcuser.username}@${srcuser.host ?? this.config.hostname}のモデレーションノート\n${srcprofile.moderationNote}\n\n` : ''}
+  		${dstprofile.moderationNote ? `@${dstuser.username}@${dstuser.host ?? this.config.hostname}のモデレーションノート\n${dstprofile.moderationNote}\n\n` : ''}
+			`.trim();
 		await this.userProfilesRepository.update({ userId: dst.id }, {
 			moderationNote: dstmodnote,
 		});
-		const srdmodnote = `${srcprofile.moderationNote ? srcprofile.moderationNote + '\n' : ''}${dstuser.username}@${dstuser.host} (${dstuser.id}) に移動しました。\n${dstprofile.moderationNote ? dstprofile.moderationNote + '\n' : ''}`;
+
+		const srdmodnote = `
+  		@${dstuser.username}@${dstuser.host ?? this.config.hostname} (${dstuser.id}) に移動しました。
+  		${srcprofile.moderationNote ? `@${srcuser.username}@${srcuser.host ?? this.config.hostname}のモデレーションノート\n${srcprofile.moderationNote}\n\n` : ''}
+ 			${dstprofile.moderationNote ? `@${dstuser.username}@${dstuser.host ?? this.config.hostname}のモデレーションノート\n${dstprofile.moderationNote}\n\n` : ''}
+			`.trim();
 		await this.userProfilesRepository.update({ userId: src.id }, {
 			moderationNote: srdmodnote,
+		});
+	}
+
+	@bindThis
+	private async updateAccountMoveLogs(src: ThinUser, dst: MiUser): Promise<void> {
+		await this.userAccountMoveLogRepository.insert({
+			id: this.idService.gen(),
+			movedToId: dst.id,
+			movedFromId: src.id,
+			createdAt: new Date(),
 		});
 	}
 
