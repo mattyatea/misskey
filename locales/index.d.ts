@@ -1797,7 +1797,7 @@ export interface Locale extends ILocale {
      */
     "moderationLogs": string;
     /**
-     * ユーザーのアカウント引っ越しのログ
+     * アカウント移行使用ログ
      */
     "userAccountMoveLogs": string;
     /**
