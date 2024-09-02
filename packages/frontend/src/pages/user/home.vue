@@ -304,6 +304,11 @@ function menu(ev: MouseEvent) {
 }
 
 async function fetchMovedFromLog() {
+	if (!props.user.id) {
+		movedFromLog.value = null;
+		return;
+	}
+
 	movedFromLog.value = await misskeyApi('admin/show-user-account-move-logs', { movedToId: props.user.id });
 }
 
@@ -383,6 +388,9 @@ function buildSkebStatus(): string {
 watch([props.user], () => {
 	memoDraft.value = props.user.memo;
 	fetchSkebStatus();
+	if ($i?.isModerator) {
+		fetchMovedFromLog();
+	}
 });
 
 onMounted(() => {
@@ -401,7 +409,9 @@ onMounted(() => {
 		}
 	}
 	fetchSkebStatus();
-	fetchMovedFromLog();
+	if ($i?.isModerator) {
+		fetchMovedFromLog();
+	}
 	nextTick(() => {
 		adjustMemoTextarea();
 	});
