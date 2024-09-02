@@ -283,10 +283,6 @@ const moderationNote = ref(props.user.moderationNote);
 const editModerationNote = ref(false);
 const movedFromLog = ref<null | {movedFromId:string;}[]>(null);
 
-if ($i?.isModerator) {
-	movedFromLog.value = await misskeyApi('admin/show-user-account-move-logs', { movedToId: props.user.id });
-}
-
 watch(moderationNote, async () => {
 	await misskeyApi('admin/update-user-note', { userId: props.user.id, text: moderationNote.value });
 });
@@ -305,6 +301,10 @@ const age = computed(() => {
 function menu(ev: MouseEvent) {
 	const { menu, cleanup } = getUserMenu(user.value, router);
 	os.popupMenu(menu, ev.currentTarget ?? ev.target).finally(cleanup);
+}
+
+async function fetchMovedFromLog() {
+	movedFromLog.value = await misskeyApi('admin/show-user-account-move-logs', { movedToId: props.user.id });
 }
 
 function parallaxLoop() {
@@ -401,6 +401,7 @@ onMounted(() => {
 		}
 	}
 	fetchSkebStatus();
+	fetchMovedFromLog();
 	nextTick(() => {
 		adjustMemoTextarea();
 	});
