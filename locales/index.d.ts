@@ -4385,6 +4385,10 @@ export interface Locale extends ILocale {
      */
     "accountMoved": string;
     /**
+     * このユーザーは次のアカウントから移行されました：
+     */
+    "accountMovedFrom": string;
+    /**
      * このアカウントは移行されています
      */
     "accountMovedShort": string;

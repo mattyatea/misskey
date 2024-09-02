@@ -269,31 +269,17 @@ export class AccountMoveService {
 
 	@bindThis
 	private async updateModerationNote(src: ThinUser, dst: MiUser): Promise<void> {
-		const [srcuser, srcprofile] = await Promise.all([
-			this.usersRepository.findOneBy({ id: src.id }),
-			this.userProfilesRepository.findOneBy({ userId: src.id }),
-		]);
-		const [dstuser, dstprofile] = await Promise.all([
-			this.usersRepository.findOneBy({ id: dst.id }),
-			this.userProfilesRepository.findOneBy({ userId: dst.id }),
-		]);
-		if (!srcuser || !srcprofile || !dstuser || !dstprofile) return;
-		const dstmodnote = `
-  		@${srcuser.username}@${srcuser.host ?? this.config.hostname} (${srcuser.id}) から移動されました。
-  		${srcprofile.moderationNote ? `@${srcuser.username}@${srcuser.host ?? this.config.hostname}のモデレーションノート\n${srcprofile.moderationNote}\n\n` : ''}
-  		${dstprofile.moderationNote ? `@${dstuser.username}@${dstuser.host ?? this.config.hostname}のモデレーションノート\n${dstprofile.moderationNote}\n\n` : ''}
-			`.trim();
+		const srcprofile = await this.userProfilesRepository.findOneBy({ userId: src.id });
+		const dstprofile = await this.userProfilesRepository.findOneBy({ userId: dst.id });
+
+		if (!srcprofile || !dstprofile) return;
+
 		await this.userProfilesRepository.update({ userId: dst.id }, {
-			moderationNote: dstmodnote,
+			moderationNote: srcprofile.moderationNote + '\n' + dstprofile.moderationNote,
 		});
 
-		const srdmodnote = `
-  		@${dstuser.username}@${dstuser.host ?? this.config.hostname} (${dstuser.id}) に移動しました。
-  		${srcprofile.moderationNote ? `@${srcuser.username}@${srcuser.host ?? this.config.hostname}のモデレーションノート\n${srcprofile.moderationNote}\n\n` : ''}
- 			${dstprofile.moderationNote ? `@${dstuser.username}@${dstuser.host ?? this.config.hostname}のモデレーションノート\n${dstprofile.moderationNote}\n\n` : ''}
-			`.trim();
 		await this.userProfilesRepository.update({ userId: src.id }, {
-			moderationNote: srdmodnote,
+			moderationNote: srcprofile.moderationNote + '\n' + dstprofile.moderationNote,
 		});
 	}
 
