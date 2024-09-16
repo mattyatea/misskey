@@ -128,7 +128,7 @@ export class AccountMoveService {
 				this.copyBlocking(src, dst),
 				this.copyMutings(src, dst),
 				this.updateLists(src, dst),
-				this.updateModerationNote(src, dst),
+				this.mergeModerationNote(src, dst),
 				this.updateAccountMoveLogs(src, dst),
 			]);
 		} catch {
@@ -268,7 +268,7 @@ export class AccountMoveService {
 	}
 
 	@bindThis
-	private async updateModerationNote(src: ThinUser, dst: MiUser): Promise<void> {
+	private async mergeModerationNote(src: ThinUser, dst: MiUser): Promise<void> {
 		const srcprofile = await this.userProfilesRepository.findOneBy({ userId: src.id });
 		const dstprofile = await this.userProfilesRepository.findOneBy({ userId: dst.id });
 
