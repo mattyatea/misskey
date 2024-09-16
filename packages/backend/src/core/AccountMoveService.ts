@@ -129,7 +129,7 @@ export class AccountMoveService {
 				this.copyMutings(src, dst),
 				this.updateLists(src, dst),
 				this.mergeModerationNote(src, dst),
-				this.updateAccountMoveLogs(src, dst),
+				this.insertAccountMoveLog(src, dst),
 			]);
 		} catch {
 			/* skip if any error happens */
@@ -284,7 +284,7 @@ export class AccountMoveService {
 	}
 
 	@bindThis
-	private async updateAccountMoveLogs(src: ThinUser, dst: MiUser): Promise<void> {
+	private async insertAccountMoveLog(src: ThinUser, dst: MiUser): Promise<void> {
 		await this.userAccountMoveLogRepository.insert({
 			id: this.idService.gen(),
 			movedToId: dst.id,
