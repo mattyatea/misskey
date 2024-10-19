@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<img v-if="errored" src="/client-assets/dummy.png" :alt="alt" :title="alt" decoding="async" :class="$style.root"/>
+<img v-if="errored" src="/client-assets/dummy.png" :alt="alt" :title="alt" decoding="async" :class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]"/>
 <img
 	v-else
 	:class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]"
