@@ -74,8 +74,7 @@ const url = computed(() => {
 });
 
 watch(url, (newValue) => {
-	errored.value = false;
-	if (newValue === undefined) errored.value = true;
+errored.value = (newValue === undefined);
 });
 
 const alt = computed(() => `:${customEmojiName.value}:`);
