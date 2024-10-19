@@ -74,7 +74,6 @@ const url = computed(() => {
 });
 
 watch(url, (newValue) => {
-	console.log(newValue);
 	errored.value = false;
 	if (newValue === undefined) errored.value = true;
 });
