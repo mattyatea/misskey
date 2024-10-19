@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<span v-if="errored">:{{ customEmojiName }}:</span>
+<img v-if="errored" src="/client-assets/dummy.png" :alt="alt" :title="alt" decoding="async" :class="$style.root"/>
 <img
 	v-else
 	:class="[$style.root, { [$style.normal]: normal, [$style.noStyle]: noStyle }]"
@@ -19,7 +19,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, ref } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { getProxiedImageUrl, getStaticImageUrl } from '@/scripts/media-proxy.js';
 import { defaultStore } from '@/store.js';
 import { customEmojisMap } from '@/custom-emojis.js';
@@ -71,6 +71,12 @@ const url = computed(() => {
 	return defaultStore.reactiveState.disableShowingAnimatedImages.value
 		? getStaticImageUrl(proxied)
 		: proxied;
+});
+
+watch(url, (newValue) => {
+	console.log(newValue);
+	errored.value = false;
+	if (newValue === undefined) errored.value = true;
 });
 
 const alt = computed(() => `:${customEmojiName.value}:`);
