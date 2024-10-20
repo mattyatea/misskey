@@ -489,7 +489,7 @@ async function reactionMuteToggle(emojiName: string) {
 		mutedReactions.value.push(emojiName);
 		defaultStore.set('mutedReactions', mutedReactions.value);
 	} else {
-		mutedReactions.value = mutedReactions.value.filter(x => x !== emojiName)
+		mutedReactions.value = mutedReactions.value.filter(x => x !== emojiName);
 		defaultStore.set('mutedReactions', mutedReactions.value);
 	}
 }
