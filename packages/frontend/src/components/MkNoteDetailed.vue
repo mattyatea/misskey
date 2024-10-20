@@ -171,7 +171,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span style="margin-left: 4px;">{{ appearNote.reactions[reaction] }}</span>
 				</button>
 			</div>
-			<MkButton v-if="reactionTabType" :class="$style.reactionMuteButton" @click="reactionMuteToggle(reactionTabType)"> <i class="ti" :class="{['ti-mood-off']: !mutedReactions.includes(reactionTabType),['ti-mood-happy']:mutedReactions.includes(reactionTabType)}"></i> {{ !mutedReactions.includes(reactionTabType) ? i18n.ts.muteThisReaction : i18n.ts.unmuteThisReaction }} </MkButton>
+			<MkButton v-if="reactionTabType" :class="$style.reactionMuteButton" @click="reactionMuteToggle(reactionTabType)"> <i :class="!mutedReactions.includes(reactionTabType) ? 'ti ti-mood-happy' : 'ti ti-mood-off'"></i> {{ !mutedReactions.includes(reactionTabType) ? i18n.ts.muteThisReaction : i18n.ts.unmuteThisReaction }} </MkButton>
 			<MkPagination v-if="reactionTabType" :key="reactionTabType" :pagination="reactionsPagination" :disableAutoLoad="true">
 				<template #default="{ items }">
 					<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); grid-gap: 12px;">
